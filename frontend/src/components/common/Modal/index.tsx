@@ -2,7 +2,7 @@ import { FC, useRef } from 'react';
 import styles from './Modal.module.scss';
 import classNames from 'classnames';
 import { FaTimes } from 'react-icons/fa';
-import useOnClickOutside from '../../hooks/onClickOutside';
+import useOnClickOutside from '../../../hooks/onClickOutside';
 
 interface ModalProps {
   isActive: boolean;
