@@ -1,0 +1,65 @@
+@import './vars';
+@import './libs/normalize';
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: $back-clr;
+  color: #000;
+}
+
+h2 {
+}
+
+input {
+}
+
+button {
+}
+
+/* Стили, применяемые, когда устройство использует тап */
+@media (hover: none) {
+  button {
+    &:hover {
+      background-color: $button-clr;
+      border: 1px solid rgba($color: #000, $alpha: 0);
+      color: #fff;
+    }
+  }
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+.container {
+  width: calc(100vw - 250px);
+  margin: 0 auto;
+  max-width: 1400px;
+
+  @media (max-width: 1000px) {
+    width: calc(100vw - 100px);
+  }
+
+  @media (max-width: 860px) {
+    width: calc(100vw - 25px);
+  }
+}
+
+.App {
+  text-align: center;
+}
+
+.content {
+  margin: 30px 0;
+}
