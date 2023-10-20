@@ -10,11 +10,12 @@
 
 Мы работаем с широким спектром технологий, чтобы создать максимально устойчивое и инновационное решение. Наши основные инструменты включают в себя:
 
-- React
-- Typescript
-- Express
-- PostgreSQL
-- Git
+<img src="https://img.shields.io/badge/react-000000?style=for-the-badge&logo=React&logoColor=#61DAFB" style='height: 50px;'/>
+<img src="https://img.shields.io/badge/redux-000000?style=for-the-badge&logo=redux&logoColor=#764ABC" style='height: 50px;'/>
+<img src="https://img.shields.io/badge/typescript-000000?style=for-the-badge&logo=TypeScript&logoColor=#3178C6" style='height: 50px;'/>
+<img src="https://img.shields.io/badge/express.js-000000?style=for-the-badge&logo=Express&logoColor=#ffffff" style='height: 50px;'/>
+<img src="https://img.shields.io/badge/postgresql-000000?style=for-the-badge&logo=postgresql&logoColor=##4169E1" style='height: 50px;'/>
+<img src="https://img.shields.io/badge/git-000000?style=for-the-badge&logo=git&logoColor=##F05032" style='height: 50px;'/>
 
 ## Участие
 
