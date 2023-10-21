@@ -13,6 +13,7 @@ import {
   Select,
   Space,
   Tooltip,
+  message,
 } from 'antd';
 import { AiOutlineDelete, AiOutlinePlus } from 'react-icons/ai';
 import { IQuestionType } from '../../../models/IQuestionType';
@@ -38,6 +39,7 @@ const CreatePollForm = (props: Props) => {
   const addButtonRef = useRef<HTMLButtonElement>(null);
   const [questionTypes, setQuestionTypes] = useState<IQuestionType[]>([]);
   const [questionTypesStatus, setQuestionTypesStatus] = useState(null);
+  const [isSending, setIsSending] = useState<boolean>(false);
 
   const getQuestionTypes = async () => {
     setQuestionTypesStatus(Status.LOADING);
@@ -130,6 +132,17 @@ const CreatePollForm = (props: Props) => {
 
   const submit: SubmitHandler<IPoll> = async (data) => {
     console.log(data);
+    setIsSending(true);
+    await PollService.createPoll(JSON.stringify(data))
+      .then((response) => {
+        message.success(response.data);
+      })
+      .catch((e) =>
+        message.error(
+          e.response.data.message ? e.response.data.message : e.message
+        )
+      )
+      .finally(() => setIsSending(false));
   };
 
   return (
@@ -373,7 +386,12 @@ const CreatePollForm = (props: Props) => {
           </Button>
         </Tooltip>
       </div>
-      <Button type="primary" htmlType="submit" style={{ marginTop: '15px' }}>
+      <Button
+        loading={isSending}
+        type="primary"
+        htmlType="submit"
+        style={{ marginTop: '15px' }}
+      >
         Создать
       </Button>
     </form>

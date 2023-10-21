@@ -7,4 +7,7 @@ export default class PollService {
   static fetchQuestionTypes(): Promise<AxiosResponse<IQuestionType[]>> {
     return $api.get<IQuestionType[]>(`/question-types`);
   }
+  static createPoll(data: string): Promise<AxiosResponse<string>> {
+    return $api.post<string>(`/create-poll`, { data });
+  }
 }
