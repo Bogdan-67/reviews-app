@@ -1,6 +1,5 @@
 import { FC, ForwardRefRenderFunction, forwardRef } from 'react';
 import { ButtonProps } from './button.props';
-import LoadingSpinner from '../LoadingSpinner/LoadingSpinner';
 import classNames from 'classnames';
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -11,7 +10,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={classNames(className, 'button')}
         disabled={loading || props.disabled}
         {...props}>
-        {loading ? <LoadingSpinner color={spinnerColor || undefined} size={17} /> : <>{children}</>}
+        {loading ? "":""}
       </button>
     );
   },
