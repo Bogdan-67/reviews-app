@@ -1,22 +1,20 @@
 import { PayloadAction, createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { IUser } from '../../models/IUser';
 import { AxiosResponse } from 'axios';
-import { Status } from './profileSlice';
 import { RootState } from '../store';
 import UserService from '../../services/UserService';
 import RoleService from '../../services/RoleService';
-import {FetchError} from "../../types/FetchError";
+import { FetchError } from '../../types/FetchError';
+import { Status } from '../../models/Status.enum';
 // import { UsersFetch } from '../../pages/Players';
 
 type RemoveRoleUsersParams = {
   users: number[];
 };
 
-
 type GiveRoleUsersParams = RemoveRoleUsersParams & {
   role: string;
 };
-
 
 //Функция добавления роли у user
 export const giveRoleUsers = createAsyncThunk<
@@ -143,7 +141,6 @@ export const userSlice = createSlice({
       state.error = action.payload.message;
       alert(action.payload.message);
     },
-
   },
 });
 export const SelectUsers = (state: RootState) => state.usersReducer.users;

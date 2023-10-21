@@ -9,17 +9,15 @@ const RegisterSchema = Yup.object().shape({
     //Проверяем, корректный ли адрес.
     //Если нет, то выводится сообщение в скобках
     .email('Некорректный email')
-    .max(100, 'Максимальная длина 100 символов')
 
     //не сабмитим, если поле не заполнено
     .required('Обязательное поле'),
-  firstname: Yup.string().matches(lettersRegExp, lettersWarn).required('Обязательное поле'),
-  lastname: Yup.string().matches(lettersRegExp, lettersWarn).required('Обязательное поле'),
-  middlename: Yup.string().matches(lettersRegExp, lettersWarn),
+  firstname: Yup.string().required('Обязательное поле'),
+  lastname: Yup.string().required('Обязательное поле'),
+  middlename: Yup.string(),
   phone: Yup.string()
     .matches(phoneRegExp, 'Телефон должен содержать 10 цифр')
     .required('Обязательное поле'),
-  login: Yup.string().required('Обязательное поле'),
   password: Yup.string()
     .min(4, 'Пароль должен быть длинее 3 символов')
     .required('Обязательное поле'),
@@ -28,6 +26,6 @@ const RegisterSchema = Yup.object().shape({
     .test('password-match', 'Пароли должны совпадать', function (value: string) {
       return this.parent.password === value;
     }),
-  recaptcha: Yup.string(),
+  recaptcha: Yup.string().required('Пройдите капчу'),
 });
 export default RegisterSchema;
