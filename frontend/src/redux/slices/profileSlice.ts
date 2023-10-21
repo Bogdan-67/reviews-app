@@ -9,12 +9,6 @@ import UserService from '../../services/UserService';
 import { Status } from '../../models/Status.enum';
 
 export type LoginParams = {
-  firstname: string;
-  lastname: string;
-  middlename: string;
-  email: string;
-  phone: string;
-  team: string;
   login: string;
   password: string;
 };
@@ -50,11 +44,9 @@ export const loginAccount = createAsyncThunk<
   LoginParams,
   { rejectValue: string }
 >('user/loginStatus', async (params, { rejectWithValue }) => {
-  console.log('FUNCTION LOGIN');
   try {
     const { login, password } = params;
     const response = await AuthService.login(login, password);
-    console.log('login', response);
     return response;
   } catch (error) {
     if (!error.response.data.message) {

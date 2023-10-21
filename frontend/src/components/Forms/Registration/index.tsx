@@ -1,22 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import classnames from 'classnames';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import RegisterSchema from '../../../models/validation/RegisterSchema';
 import styles from './Registration.module.scss';
 import MaskedInput from 'react-text-mask';
 import { SelectProfile, registrAccount } from '../../../redux/slices/profileSlice';
-import { bindActionCreators } from '@reduxjs/toolkit';
-import { connect } from 'react-redux';
-import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { IUser } from '../../../models/IUser';
-import AuthService from '../../../services/AuthService';
 import { Button, Input, message } from 'antd';
 import classNames from 'classnames';
 import { useAppDispatch, useAppSelector } from '../../../hooks/redux';
-import { useSelector } from 'react-redux';
 import { Status } from '../../../models/Status.enum';
 
 export const phoneNumberMask = [
@@ -63,8 +56,6 @@ const RegistrationForm = (props: Props) => {
     defaultValues: {},
     resolver: yupResolver(RegisterSchema),
   });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isError, setIsError] = useState<string>(null);
   const [passwordVisible, setPasswordVisible] = React.useState(false);
   const dispatch = useAppDispatch();
   const { error, status } = useAppSelector(SelectProfile);
@@ -77,19 +68,7 @@ const RegistrationForm = (props: Props) => {
   }, [error]);
 
   const submit: SubmitHandler<RegisterProps> = async (data) => {
-    setIsLoading(true);
     console.log(data);
-    const formData = new FormData();
-
-    for (const key in data) {
-      if (data.hasOwnProperty(key)) {
-        const value = data[key];
-
-        if (key === 'recaptcha') formData.append('g-recaptcha-response', value);
-        else formData.append(key, value);
-      }
-    }
-
     dispatch(registrAccount(data));
   };
 
@@ -135,12 +114,7 @@ const RegistrationForm = (props: Props) => {
           defaultValue=''
           render={({ field }) => (
             <>
-              <Input
-                placeholder='Email'
-                type='email'
-                status={errors.email ? 'error' : ''}
-                {...field}
-              />
+              <Input placeholder='Email' status={errors.email ? 'error' : ''} {...field} />
               {errors.email && <div>{errors.email.message}</div>}
             </>
           )}
@@ -207,6 +181,12 @@ const RegistrationForm = (props: Props) => {
           )}
         />
       </div>
+      <p className={styles.auth__text}>
+        Уже есть аккаунт?&nbsp;
+        <Link to='/login' className={styles.auth__link}>
+          Войти
+        </Link>
+      </p>
       <Button loading={status === Status.LOADING} type='primary' htmlType='submit'>
         Зарегистрироваться
       </Button>
