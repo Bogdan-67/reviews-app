@@ -1,13 +1,11 @@
 export interface IUser {
-  id_account: number;
   id_user: number;
-  name: string;
-  surname: string;
-  patronimyc: string;
+  firstname: string;
+  lastname: string;
+  middlename: string;// отчество
   email: string;
   phone: string;
-  team: string;
   login: string;
   role: string;
-  img: string;
+  rating:number;
 }
