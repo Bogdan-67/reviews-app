@@ -100,7 +100,7 @@ export const userSlice = createSlice({
       const updUsers = state.users.map((user) => {
         console.log('Выдалась роль user', response);
 
-        const findUser = response.find((obj) => obj.id_account === user.id_account);
+        const findUser = response.find((obj) => obj.id_user === user.id_user);
         if (findUser) {
           return findUser;
         } else return user;
@@ -125,7 +125,7 @@ export const userSlice = createSlice({
       state.error = initialState.error;
       const response = action.payload.data;
       const updUsers = state.users.map((user) => {
-        const findUser = response.find((obj: IUser) => obj.id_account === user.id_account);
+        const findUser = response.find((obj: IUser) => obj.id_user === user.id_user);
         if (findUser) {
           return findUser;
         } else return user;
