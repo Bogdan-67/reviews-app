@@ -9,22 +9,13 @@ const path = require("path");
 const sharp = require("sharp");
 
 class AuthService {
-  async createUser({
-    name,
-    surname,
-    patronimyc,
-    phone,
-    email,
-    login,
-    password,
-    team,
-  }) {
+  async createUser({ firstname, lastname, middlename, email, phone }) {
     const checkPhone = await db.query(`SELECT * FROM users WHERE phone = $1`, [
       phone,
     ]);
     if (checkPhone.rows[0]) {
       throw ApiError.BadRequest(
-        "Пользователь с таким номером телефона уже зарегистрирован!",
+        "Пользователь с таким номером телефона уже зарегистрирован!"
       );
     }
     const checkEmail = await db.query(`SELECT * FROM users WHERE email = $1`, [
@@ -32,39 +23,45 @@ class AuthService {
     ]);
     if (checkEmail.rows[0]) {
       throw ApiError.BadRequest(
-        "Пользователь с такой почтой уже зарегистрирован!",
+        "Пользователь с такой почтой уже зарегистрирован!"
       );
     }
     const checkLogin = await db.query(
       `SELECT * FROM accounts WHERE login = $1`,
-      [login],
+      [login]
     );
     if (checkLogin.rows[0]) {
       throw ApiError.BadRequest(
-        "Пользователь с таким логином уже зарегистрирован!",
+        "Пользователь с таким логином уже зарегистрирован!"
       );
     }
     const newUser = await db.query(
-      `INSERT INTO users(name, surname, patronimyc, phone, email, team) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [name, surname, patronimyc, phone, email, team],
+      `INSERT INTO users(firstname, lastname, middlename, phone, email) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [firstname, lastname, middlename, phone, email]
     );
     const hashPassword = await bcrypt.hash(password, 3);
     const newAccount = await db.query(
       `INSERT INTO accounts(login, password, id_user) VALUES ($1, $2, $3) RETURNING *`,
-      [login, hashPassword, newUser.rows[0].id_user],
+      [login, hashPassword, newUser.rows[0].id_user]
     );
-    const role = await db.query(`SELECT * FROM roles WHERE id_role = $1`, [
-      newAccount.rows[0].role_id,
-    ]);
+    const newUserRole = await db.query(
+      `INSERT INTO user_roles(account_id, role_id)
+      VALUES ($1, (SELECT role_name FROM roles WHERE id_role = 1))
+      RETURNING *`,
+      [newAccount.rows[0].id_account]
+    );
+    // const role = await db.query(`SELECT * FROM roles WHERE id_role = $1`, [
+    //   newAccount.rows[0].role_id,
+    // ]);
     const userDto = new UserDTO({
       ...newAccount.rows[0],
-      ...role.rows[0],
+      ...newUserRole.rows[0].roles,
       ...newUser.rows[0],
     });
     const tokens = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(
       newAccount.rows[0].id_account,
-      tokens.refreshToken,
+      tokens.refreshToken
     );
     return { user: { ...userDto }, ...tokens };
   }
@@ -78,7 +75,7 @@ class AuthService {
     }
     const isPassEquals = await bcrypt.compare(
       password,
-      account.rows[0].password,
+      account.rows[0].password
     );
     if (!isPassEquals) {
       throw ApiError.BadRequest("Неверный пароль!");
@@ -93,7 +90,7 @@ class AuthService {
     INNER JOIN user_roles ON account.id_account = user_roles.account_id
     INNER JOIN roles ON user_roles.role_id = roles.id_role
     WHERE account.id_account = $1`,
-      [account.rows[0].id_account],
+      [account.rows[0].id_account]
     );
     // const roles = await db.query(`SELECT * from roles where id_role = $1 `, [
     //   role_id,
@@ -127,7 +124,7 @@ class AuthService {
     }
     const account = await db.query(
       `SELECT * FROM accounts WHERE id_account = $1`,
-      [userData.id_account],
+      [userData.id_account]
     );
     const user = await db.query("SELECT * FROM users WHERE id_user = $1", [
       userData.id_user,
