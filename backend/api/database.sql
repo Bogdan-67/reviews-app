@@ -44,7 +44,7 @@ CREATE TABLE status_team(
 CREATE TABLE teams(
     id_team SERIAL PRIMARY KEY,
     team_name VARCHAR(255) NOT NULL,
-    created_at DATE NOT NULL,
+    created_at DATE NOT NULL DEFAULT current_date,
     status_team_id INTEGER NOT NULL,
     FOREIGN KEY (status_team_id) REFERENCES status_team(id_status_team) ON DELETE CASCADE
     
@@ -78,8 +78,8 @@ CREATE TABLE type_requests(
 
 CREATE TABLE requests(
     id_request SERIAL PRIMARY KEY,
-    created_at DATE NOT NULL,
-    updated_at DATE NOT NULL,
+    created_at DATE NOT NULL DEFAULT current_date,
+    updated_at DATE NOT NULL DEFAULT current_date,
     intern_id INTEGER NOT NULL,
     FOREIGN KEY (intern_id) REFERENCES users(id_user) ON DELETE CASCADE,
     author_id INTEGER NOT NULL,
