@@ -10,6 +10,7 @@ const roleRouter = require('./routes/role.routes');
 const errorMiddleware = require('./middlewares/error-middleware');
 const requestRouter = require('./routes/requests.routes');
 const pollsRouter = require('./routes/polls.routes');
+const userRouter = require('./routes/user.routes');
 
 const PORT = process.env.PORT || 5000;
 
@@ -30,6 +31,7 @@ app.use('/', authRouter);
 app.use('/', roleRouter);
 app.use('/', requestRouter);
 app.use('/', pollsRouter);
+app.use('/', userRouter);
 app.use(errorMiddleware);
 
 const start = async () => {
