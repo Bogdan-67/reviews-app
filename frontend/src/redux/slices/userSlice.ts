@@ -12,23 +12,9 @@ type RemoveRoleUsersParams = {
   users: number[];
 };
 
-type DeleteUserParams = {
-  id_user: number;
-};
 
 type GiveRoleUsersParams = RemoveRoleUsersParams & {
   role: string;
-};
-
-type PageParams = {
-  page: number;
-  limit: number;
-};
-type ParamsSearch = {
-  value?: string;
-  valueGroup?: string;
-  page: number;
-  limit: number;
 };
 
 

@@ -1,5 +1,4 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { useDispatch } from 'react-redux';
 import profile from './slices/profileSlice';
 import usersReducer from './slices/userSlice';
 

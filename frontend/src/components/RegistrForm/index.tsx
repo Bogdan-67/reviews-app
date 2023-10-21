@@ -46,8 +46,6 @@ interface FormValues {
 let setSubmittingHigher;
 
 const InnerForm = (props: FormikProps<FormValues>) => {
-  const [style, setStyle] = useState('');
-  const error = 'border:1px solid red';
   const { values, touched, errors, isSubmitting } = props;
   return (
     <Form className={styles.auth}>
