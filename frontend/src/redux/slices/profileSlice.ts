@@ -8,9 +8,9 @@ import { API_URL } from '../../http';
 import UserService from '../../services/UserService';
 
 export type LoginParams = {
-  name: string;
-  surname: string;
-  patronimyc: string;
+  firstname: string;
+  lastname: string;
+  middlename: string;
   email: string;
   phone: string;
   team: string;
@@ -24,9 +24,9 @@ export type Error = {
 };
 
 export type RegistrParams = {
-  name: string;
-  surname: string;
-  patronimyc: string;
+  firstname: string;
+  lastname: string;
+  middlename: string;
   email: string;
   phone: string;
   team: string;
@@ -68,13 +68,13 @@ export const registrAccount = createAsyncThunk<AxiosResponse<AuthResponse>, Regi
   'user/registrStatus',
   async (params, { rejectWithValue }) => {
     try {
-      const { name, surname, patronimyc, phone, email, team, login, password, recaptcha } = params;
+      const { firstname, lastname, middlename, phone, email, team, login, password, recaptcha } = params;
       const response = await AuthService.registration(
-        login,
-        password,
-        name,
-        surname,
-        patronimyc,
+          login,
+          password,
+          firstname,
+          lastname,
+          middlename,
         email,
         phone,
         team,
@@ -169,17 +169,15 @@ export interface Profile {
 
 const initialState: Profile = {
   user: {
-    id_account: null,
     id_user: null,
-    name: '',
-    surname: '',
-    patronimyc: '',
+    firstname: '',
+    lastname: '',
+    middlename: '',
     email: '',
     phone: '',
-    team: '',
+    rating:10,
     role: '',
     login: '',
-    img: '',
   },
   status: Status.SUCCESS,
   isAuth: localStorage.isAuth ? localAuth(localStorage.isAuth) : false,

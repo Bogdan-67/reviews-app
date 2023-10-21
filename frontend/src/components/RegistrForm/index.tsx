@@ -32,9 +32,9 @@ export const phoneNumberMask = [
 ];
 
 interface FormValues {
-  name: string;
-  surname: string;
-  patronimyc: string;
+  firstname: string;
+  lastname: string;
+  middlename: string;
   phone: string;
   email: string;
   team: string;
@@ -112,27 +112,27 @@ const InnerForm = (props: FormikProps<FormValues>) => {
             className={classnames(
               styles.auth__forinput,
               {
-                [styles.input_true]: touched.patronimyc && !errors.patronimyc,
+                [styles.input_true]: touched.middlename && !errors.middlename,
               },
-              { [styles.input_false]: touched.patronimyc && errors.patronimyc },
+              { [styles.input_false]: touched.middlename && errors.middlename },
             )}>
             <Field
-              style={{ border: errors.patronimyc && touched.patronimyc ? '1px solid red' : '' }}
+              style={{ border: errors.middlename && touched.middlename ? '1px solid red' : '' }}
               name='patronimyc'
               type='text'
               placeholder='Отчество (если есть)'
             />
-            {!errors.patronimyc && touched.patronimyc && (
+            {!errors.middlename && touched.middlename && (
               <span>
                 <FaCheckCircle className={classnames(styles.checkIcon, styles.checkIcon_true)} />
               </span>
             )}
-            {errors.patronimyc && touched.patronimyc && (
+            {errors.middlename && touched.middlename && (
               <span>
                 <FaTimesCircle className={classnames(styles.checkIcon, styles.checkIcon_false)} />
               </span>
             )}
-            {errors.patronimyc && touched.patronimyc && <div>{errors.patronimyc}</div>}
+            {errors.middlename && touched.middlename && <div>{errors.middlename}</div>}
           </div>
           <div
             className={classnames(
@@ -350,12 +350,12 @@ export const RegistrForm = withFormik<RegistrProps, FormValues>({
   // Transform outer props into form values
   mapPropsToValues: (props) => {
     return {
-      name: '',
-      surname: '',
-      patronimyc: '',
+      firstname: '',
+      lastname: '',
+      middlename: '',
       phone: '',
       email: '',
-      team: '',
+      rating: 10,
       login: props.initialLogin || '',
       password: '',
       passwordCheck: '',

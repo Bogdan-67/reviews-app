@@ -13,13 +13,12 @@ const RegisterSchema = Yup.object().shape({
 
     //не сабмитим, если поле не заполнено
     .required('Обязательное поле'),
-  name: Yup.string().matches(lettersRegExp, lettersWarn).required('Обязательное поле'),
-  surname: Yup.string().matches(lettersRegExp, lettersWarn).required('Обязательное поле'),
-  patronimyc: Yup.string().matches(lettersRegExp, lettersWarn),
+  firstname: Yup.string().matches(lettersRegExp, lettersWarn).required('Обязательное поле'),
+  lastname: Yup.string().matches(lettersRegExp, lettersWarn).required('Обязательное поле'),
+  middlename: Yup.string().matches(lettersRegExp, lettersWarn),
   phone: Yup.string()
     .matches(phoneRegExp, 'Телефон должен содержать 10 цифр')
     .required('Обязательное поле'),
-  team: Yup.string(),
   login: Yup.string().required('Обязательное поле'),
   password: Yup.string()
     .min(4, 'Пароль должен быть длинее 3 символов')
