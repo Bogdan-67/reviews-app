@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import classnames from 'classnames';
 import { Link } from 'react-router-dom';
 import { Form, Field, withFormik, FormikProps } from 'formik';
-import logo from '../../assets/img/Logo_VolleyBall.png';
 import RegisterSchema from '../../models/validation/RegisterSchema';
 import styles from './RegistrForm.module.scss';
 import MaskedInput from 'react-text-mask';
@@ -37,7 +36,6 @@ interface FormValues {
   middlename: string;
   phone: string;
   email: string;
-  team: string;
   login: string;
   password: string;
   passwordCheck: string;
@@ -47,12 +45,9 @@ interface FormValues {
 let setSubmittingHigher;
 
 const InnerForm = (props: FormikProps<FormValues>) => {
-  const [style, setStyle] = useState('');
-  const error = 'border:1px solid red';
   const { values, touched, errors, isSubmitting } = props;
   return (
     <Form className={styles.auth}>
-      <img className={styles.auth__logo} width='44' src={logo} alt='Volleyball logo'></img>
       <h2 className={styles.auth__title}>Регистрация</h2>
       <div className={styles.auth__inputs}>
         <div className={styles.auth__inputs_box1}>
@@ -60,53 +55,53 @@ const InnerForm = (props: FormikProps<FormValues>) => {
             className={classnames(
               styles.auth__forinput,
               {
-                [styles.input_true]: touched.name && !errors.name,
+                [styles.input_true]: touched.firstname && !errors.firstname,
               },
-              { [styles.input_false]: touched.name && errors.name },
+              { [styles.input_false]: touched.firstname && errors.firstname },
             )}>
             <Field
-              style={{ border: errors.name && touched.name ? '1px solid red' : '' }}
-              name='name'
+              style={{ border: errors.firstname && touched.firstname ? '1px solid red' : '' }}
+              firstname='firstname'
               type='text'
               placeholder='Имя'
             />
-            {!errors.name && touched.name && (
+            {!errors.firstname && touched.firstname && (
               <span>
                 <FaCheckCircle className={classnames(styles.checkIcon, styles.checkIcon_true)} />
               </span>
             )}
-            {errors.name && touched.name && (
+            {errors.firstname && touched.firstname && (
               <span>
                 <FaTimesCircle className={classnames(styles.checkIcon, styles.checkIcon_false)} />
               </span>
             )}
-            {errors.name && touched.name && <div>{errors.name}</div>}
+            {errors.firstname && touched.firstname && <div>{errors.firstname}</div>}
           </div>
           <div
             className={classnames(
               styles.auth__forinput,
               {
-                [styles.input_true]: touched.surname && !errors.surname,
+                [styles.input_true]: touched.lastname && !errors.lastname,
               },
-              { [styles.input_false]: touched.surname && errors.surname },
+              { [styles.input_false]: touched.lastname && errors.lastname },
             )}>
             <Field
-              style={{ border: errors.surname && touched.surname ? '1px solid red' : '' }}
-              name='surname'
+              style={{ border: errors.lastname && touched.lastname ? '1px solid red' : '' }}
+              name='lastname'
               type='text'
               placeholder='Фамилия'
             />
-            {!errors.surname && touched.surname && (
+            {!errors.lastname && touched.lastname && (
               <span>
                 <FaCheckCircle className={classnames(styles.checkIcon, styles.checkIcon_true)} />
               </span>
             )}
-            {errors.surname && touched.surname && (
+            {errors.lastname && touched.lastname && (
               <span>
                 <FaTimesCircle className={classnames(styles.checkIcon, styles.checkIcon_false)} />
               </span>
             )}
-            {errors.surname && touched.surname && <div>{errors.surname}</div>}
+            {errors.lastname && touched.lastname && <div>{errors.lastname}</div>}
           </div>
           <div
             className={classnames(
@@ -190,25 +185,6 @@ const InnerForm = (props: FormikProps<FormValues>) => {
           </div>
         </div>
         <div className={styles.auth__inputs_box2}>
-          <div className={classnames(styles.auth__forinput)}>
-            <Field
-              style={{ border: errors.team && touched.team ? '1px solid red' : '' }}
-              name='team'
-              type='text'
-              placeholder='Группа'
-            />
-            {!errors.team && touched.team && (
-              <span>
-                <FaCheckCircle className={classnames(styles.checkIcon, styles.checkIcon_true)} />
-              </span>
-            )}
-            {errors.team && touched.team && (
-              <span>
-                <FaTimesCircle className={classnames(styles.checkIcon, styles.checkIcon_false)} />
-              </span>
-            )}
-            {errors.team && touched.team && <div>{errors.team}</div>}
-          </div>
           <div
             className={classnames(
               styles.auth__forinput,
@@ -317,16 +293,16 @@ const InnerForm = (props: FormikProps<FormValues>) => {
         type='submit'
         className={classnames(styles.auth__button, {
           [styles.auth__button_disabled]:
-            !values.name ||
-            !values.surname ||
+            !values.firstname ||
+            !values.lastname ||
             !values.phone ||
             !values.email ||
             !values.login ||
             !values.password ||
             !values.passwordCheck ||
             !values.recaptcha ||
-            errors.name ||
-            errors.surname ||
+            errors.firstname ||
+            errors.lastname ||
             errors.email ||
             errors.login ||
             errors.password ||
@@ -355,7 +331,6 @@ export const RegistrForm = withFormik<RegistrProps, FormValues>({
       middlename: '',
       phone: '',
       email: '',
-      rating: 10,
       login: props.initialLogin || '',
       password: '',
       passwordCheck: '',

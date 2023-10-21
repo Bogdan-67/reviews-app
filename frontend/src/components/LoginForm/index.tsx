@@ -2,7 +2,6 @@ import React from 'react';
 import classnames from 'classnames';
 import { Link } from 'react-router-dom';
 import { Form, Field, withFormik, FormikProps } from 'formik';
-import logo from '../../assets/img/Logo_VolleyBall.png';
 import styles from './LoginForm.module.scss';
 import LoginSchema from '../../models/validation/LoginSchema';
 import { loginAccount } from '../../redux/slices/profileSlice';
@@ -22,7 +21,6 @@ const InnerForm: React.FC = (props: FormikProps<FormValues>) => {
   return (
     <div className={styles.auth__2}>
       <Form className={styles.auth}>
-        <img className={styles.auth__logo} width='44' src={logo} alt='Volleyball logo'></img>
         <h2 className={styles.auth__title}>Авторизация</h2>
         <div className={styles.auth__inputs}>
           <div className={classnames(styles.auth__forinput)}>

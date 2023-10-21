@@ -3,62 +3,72 @@ import './scss/app.scss';
 import Header from './components/Header';
 import Login from './pages/Login';
 import Registr from './pages/Registr';
-import React, { useState } from 'react';
-import { RootState, useAppDispatch } from './redux/store';
-import { SelectUserRole, checkAuth } from './redux/slices/profileSlice';
+import React, { useEffect, useState } from 'react';
+import { RootState } from './redux/store';
+import { SelectProfile, SelectUserRole, checkAuth } from './redux/slices/profileSlice';
 import { useSelector } from 'react-redux';
-import { Status } from './redux/slices/profileSlice';
 import NotFound from './pages/NotFound/NotFound';
-import LoadingSpinner from './components/common/LoadingSpinner/LoadingSpinner';
-import Footer from './components/Footer';
+
+import { useAppDispatch, useAppSelector } from './hooks/redux';
+import Profile from './pages/Profile';
+import MainLayout from './layouts/MainLayout';
+import TableRequests from './pages/Requests/TableRequests';
+import CreateRequest from './pages/Requests/CreateRequest';
+import CreatePoll from './pages/Poll/CreatePoll';
+import CompletePoll from './pages/Poll/CompletePoll';
+import { message } from 'antd';
+import { Status } from './models/Status.enum';
 
 function App() {
   const dispatch = useAppDispatch();
-  const status = useSelector((state: RootState) => state.profile.status);
   const isAuth = useSelector((state: RootState) => state.profile.isAuth);
   const location = useLocation();
-  const [blockHeight, setBlockHeight] = useState(0);
+  const { error, status } = useAppSelector(SelectProfile);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem('token')) {
       dispatch(checkAuth());
     }
   }, []);
 
-  if (status === Status.LOADING) return <LoadingSpinner />;
+  // if (status === Status.LOADING) return <>Loading...</>;
 
   return (
     <>
-      {isAuth && <Header />}
-      <div className='container'>
-        <div className='content'>
-          <Routes location={location} key={location.pathname}>
-            <Route
-              path='/login'
-              element={
-                <RequireNotAuth redirectTo='/'>
-                  <Login />
-                </RequireNotAuth>
-              }></Route>
-            <Route
-              path='/registration'
-              element={
-                <RequireNotAuth redirectTo='/'>
-                  <Registr />
-                </RequireNotAuth>
-              }></Route>
-            <Route
-              path='/'
-              element={
-                <RequireAuth redirectTo='/login'>
-                  <Profile />
-                </RequireAuth>
-              }></Route>
-            <Route path='*' element={<NotFound />}></Route>
-          </Routes>
-        </div>
-      </div>
-      {isAuth && <Footer setBlockHeight={setBlockHeight} />}
+      <Routes location={location} key={location.pathname}>
+        <Route
+          path='/login'
+          element={
+            <RequireNotAuth redirectTo='/'>
+              <Login />
+            </RequireNotAuth>
+          }></Route>
+        <Route
+          path='/registration'
+          element={
+            <RequireNotAuth redirectTo='/'>
+              <Registr />
+            </RequireNotAuth>
+          }></Route>
+        <Route
+          path='/'
+          element={
+            <RequireAuth redirectTo='/login'>
+              <MainLayout />
+            </RequireAuth>
+          }>
+          <Route path='' element={<Profile />}></Route>
+          <Route path='requests' element={<></>}>
+            <Route path='' element={<TableRequests />}></Route>
+            <Route path='create' element={<CreateRequest />}></Route>
+          </Route>
+          <Route path='poll' element={<></>}>
+            <Route path='create' element={<CreatePoll />}></Route>
+            <Route path='complete/:id' element={<CompletePoll />}></Route>
+          </Route>
+          <Route path='*' element={<NotFound />}></Route>
+        </Route>
+      </Routes>
     </>
   );
 }
