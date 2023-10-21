@@ -1,27 +1,23 @@
 module.exports = class UserDTO {
-  id_account;
   id_user;
-  name;
-  surname;
-  patronimyc;
+  firstname;
+  lastname;
+  middlename;
   email;
   phone;
-  team;
+  rating;
   login;
   role;
-  img;
 
   constructor(model) {
-    this.id_account = model.id_account;
     this.id_user = model.id_user;
-    this.name = model.name;
-    this.surname = model.surname;
-    this.patronimyc = model.patronimyc;
+    this.firstname = model.firstname;
+    this.lastname = model.lastname;
+    this.middlename = model.middlename;
     this.email = model.email;
     this.phone = model.phone;
-    this.team = model.team;
+    this.rating = model.rating;
     this.login = model.login;
-    this.role = model.role_name;
-    this.img = model.img;
+    this.role = model.role;
   }
 };
