@@ -1,31 +1,51 @@
-const db = require('../db');
-const UserDTO = require('../dtos/user-dto');
-const ApiError = require('../exceptions/api-error');
-const tokenService = require('./token-service');
-const bcrypt = require('bcrypt');
-const { validationResult } = require('express-validator');
-const uuid = require('uuid');
-const path = require('path');
-const sharp = require('sharp');
+const db = require("../db");
+const UserDTO = require("../dtos/user-dto");
+const ApiError = require("../exceptions/api-error");
+const tokenService = require("./token-service");
+const bcrypt = require("bcrypt");
+const { validationResult } = require("express-validator");
+const uuid = require("uuid");
+const path = require("path");
+const sharp = require("sharp");
 
 class AuthService {
-  async createUser({ firstname, lastname, middlename, email, phone, password }) {
+  async createUser({
+    firstname,
+    lastname,
+    middlename,
+    email,
+    phone,
+    password,
+  }) {
     // Начало транзакции
-    await db.query('BEGIN');
+    await db.query("BEGIN");
 
-    const checkPhone = await db.query(`SELECT * FROM users WHERE phone = $1`, [phone]);
+    const checkPhone = await db.query(`SELECT * FROM users WHERE phone = $1`, [
+      phone,
+    ]);
     if (checkPhone.rows[0]) {
-      throw ApiError.BadRequest('Пользователь с таким номером телефона уже зарегистрирован!');
+      throw ApiError.BadRequest(
+        "Пользователь с таким номером телефона уже зарегистрирован!",
+      );
     }
 
-    const checkEmail = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+    const checkEmail = await db.query(`SELECT * FROM users WHERE email = $1`, [
+      email,
+    ]);
     if (checkEmail.rows[0]) {
-      throw ApiError.BadRequest('Пользователь с такой почтой уже зарегистрирован!');
+      throw ApiError.BadRequest(
+        "Пользователь с такой почтой уже зарегистрирован!",
+      );
     }
 
-    const checkLogin = await db.query(`SELECT * FROM accounts WHERE login = $1`, [email]);
+    const checkLogin = await db.query(
+      `SELECT * FROM accounts WHERE login = $1`,
+      [email],
+    );
     if (checkLogin.rows[0]) {
-      throw ApiError.BadRequest('Пользователь с таким логином уже зарегистрирован!');
+      throw ApiError.BadRequest(
+        "Пользователь с таким логином уже зарегистрирован!",
+      );
     }
 
     const newUser = await db.query(
@@ -52,19 +72,27 @@ class AuthService {
       ...newUser.rows[0],
     });
     const tokens = tokenService.generateTokens({ ...userDto });
-    await tokenService.saveToken(newAccount.rows[0].id_account, tokens.refreshToken);
-    await db.query('COMMIT');
+    await tokenService.saveToken(
+      newAccount.rows[0].id_account,
+      tokens.refreshToken,
+    );
+    await db.query("COMMIT");
     return { user: { ...userDto }, ...tokens };
   }
 
   async login(login, password) {
-    const account = await db.query(`SELECT * FROM accounts WHERE login = $1`, [login]);
+    const account = await db.query(`SELECT * FROM accounts WHERE login = $1`, [
+      login,
+    ]);
     if (!account.rows[0]) {
-      throw ApiError.BadRequest('Пользователь с таким логином не найден!');
+      throw ApiError.BadRequest("Пользователь с таким логином не найден!");
     }
-    const isPassEquals = await bcrypt.compare(password, account.rows[0].password);
+    const isPassEquals = await bcrypt.compare(
+      password,
+      account.rows[0].password,
+    );
     if (!isPassEquals) {
-      throw ApiError.BadRequest('Неверный пароль!');
+      throw ApiError.BadRequest("Неверный пароль!");
     }
     // const role_id = await db.query(
     //   `SELECT role_id from user_roles where id_account = $1 `,
@@ -81,12 +109,16 @@ class AuthService {
     // const roles = await db.query(`SELECT * from roles where id_role = $1 `, [
     //   role_id,
     // ]);
-    console.log('roles:', roles);
-    const user = await db.query('SELECT * FROM users WHERE id_user = $1', [
+    console.log("roles:", roles);
+    const user = await db.query("SELECT * FROM users WHERE id_user = $1", [
       account.rows[0].user_id,
     ]);
 
-    const userDto = new UserDTO({ ...roles.rows[0], ...user.rows[0], ...account.rows[0] });
+    const userDto = new UserDTO({
+      ...roles.rows[0],
+      ...user.rows[0],
+      ...account.rows[0],
+    });
     const tokens = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(userDto.id_account, tokens.refreshToken);
     return { ...tokens, user: { ...userDto } };
@@ -107,12 +139,15 @@ class AuthService {
     if (!userData || !tokenFromDb || !userData.id_account) {
       throw ApiError.UnauthorisedError();
     }
-    const account = await db.query(`SELECT * FROM accounts WHERE id_account = $1`, [
-      userData.id_account,
+    const account = await db.query(
+      `SELECT * FROM accounts WHERE id_account = $1`,
+      [userData.id_account],
+    );
+    const user = await db.query("SELECT * FROM users WHERE id_user = $1", [
+      userData.id_user,
     ]);
-    const user = await db.query('SELECT * FROM users WHERE id_user = $1', [userData.id_user]);
     if (!user.rows[0]) {
-      throw ApiError.BadRequest('Пользователь не найден!');
+      throw ApiError.BadRequest("Пользователь не найден!");
     }
     const userRole = await db.query(`SELECT * FROM roles WHERE id_role = $1`, [
       account.rows[0].role_id,
