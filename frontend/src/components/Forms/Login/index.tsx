@@ -3,7 +3,11 @@ import classnames from 'classnames';
 import { Link } from 'react-router-dom';
 import RegisterSchema from '../../../models/validation/RegisterSchema';
 import styles from './Login.module.scss';
-import { SelectProfile, loginAccount, registrAccount } from '../../../redux/slices/profileSlice';
+import {
+  SelectProfile,
+  loginAccount,
+  registrAccount,
+} from '../../../redux/slices/profileSlice';
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Input, message } from 'antd';
@@ -43,47 +47,67 @@ const LoginForm = () => {
   };
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit(submit)}>
-      <h1>Авторизация</h1>
-      <div className={styles.inputs}>
-        <Controller
-          name='login'
-          control={control}
-          defaultValue=''
-          render={({ field }) => (
-            <>
-              <Input placeholder='Логин' status={errors.login ? 'error' : ''} {...field} />
-              {errors.login && <div>{errors.login.message}</div>}
-            </>
-          )}
-        />
-        <Controller
-          name='password'
-          control={control}
-          defaultValue=''
-          render={({ field }) => (
-            <>
-              <Input.Password
-                placeholder='Пароль'
-                visibilityToggle={{ visible: passwordVisible, onVisibleChange: setPasswordVisible }}
-                status={errors.password ? 'error' : ''}
-                {...field}
-              />
-              {errors.password && <div>{errors.password.message}</div>}
-            </>
-          )}
-        />
+    <div className={styles.auto}>
+      <div className={styles.container}>
+        <form className={styles.form} onSubmit={handleSubmit(submit)}>
+          <h1>Авторизация</h1>
+          <div className={styles.inputs}>
+            <h3>Email</h3>
+            <Controller
+              name='login'
+              control={control}
+              defaultValue=''
+              render={({ field }) => (
+                <>
+                  <Input
+                    placeholder='Логин'
+                    status={errors.login ? 'error' : ''}
+                    {...field}
+                  />
+                  {errors.login && <div>{errors.login.message}</div>}
+                </>
+              )}
+            />
+            <h3>Пароль</h3>
+            <Controller
+              name='password'
+              control={control}
+              defaultValue=''
+              render={({ field }) => (
+                <>
+                  <Input.Password
+                    placeholder='Пароль'
+                    visibilityToggle={{
+                      visible: passwordVisible,
+                      onVisibleChange: setPasswordVisible,
+                    }}
+                    status={errors.password ? 'error' : ''}
+                    {...field}
+                  />
+                  {errors.password && <div>{errors.password.message}</div>}
+                </>
+              )}
+            />
+          </div>
+          <p className={styles.auth__text_2}>
+            Нет аккаунта?&nbsp;
+            <Link to='/registration' className={styles.auth__2_button}>
+              Зарегистрироваться
+            </Link>
+          </p>
+          <div className={styles.button}>
+            <Button
+              className={styles.buttonCol}
+              loading={status === Status.LOADING}
+              type='primary'
+              htmlType='submit'
+            >
+              Войти
+            </Button>
+          </div>
+        </form>
       </div>
-      <p className={styles.auth__text_2}>
-        Нет аккаунта?&nbsp;
-        <Link to='/registration' className={styles.auth__2_button}>
-          Зарегистрироваться
-        </Link>
-      </p>
-      <Button loading={status === Status.LOADING} type='primary' htmlType='submit'>
-        Войти
-      </Button>
-    </form>
+    </div>
   );
 };
 
