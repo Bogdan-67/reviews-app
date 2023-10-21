@@ -1,7 +1,7 @@
 const db = require('../db');
 const ApiError = require('../exceptions/api-error');
 
-class PollsService {
+class UserService {
   async getUsers() {
     await db.query('BEGIN');
 
@@ -48,4 +48,4 @@ class PollsService {
   }
 }
 
-module.exports = new PollsService();
+module.exports = new UserService();
