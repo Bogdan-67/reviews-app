@@ -70,6 +70,7 @@ const RegistrationForm = (props: Props) => {
   const { error, status } = useAppSelector(SelectProfile);
 
   useEffect(() => {
+    console.log(error);
     if (error) {
       message.error(error);
     }
@@ -206,7 +207,6 @@ const RegistrationForm = (props: Props) => {
           )}
         />
       </div>
-      {isError && <div>{isError}</div>}
       <Button loading={status === Status.LOADING} type='primary' htmlType='submit'>
         Зарегистрироваться
       </Button>

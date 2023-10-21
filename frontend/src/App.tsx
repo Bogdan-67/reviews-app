@@ -23,7 +23,6 @@ function App() {
   const dispatch = useAppDispatch();
   const isAuth = useSelector((state: RootState) => state.profile.isAuth);
   const location = useLocation();
-  const [blockHeight, setBlockHeight] = useState(0);
   const { error, status } = useAppSelector(SelectProfile);
 
   useEffect(() => {
@@ -32,13 +31,7 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
-    if (error) {
-      message.error(error);
-    }
-  }, [error]);
-
-  if (status === Status.LOADING) return <>Loading...</>;
+  // if (status === Status.LOADING) return <>Loading...</>;
 
   return (
     <>

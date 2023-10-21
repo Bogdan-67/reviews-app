@@ -179,6 +179,7 @@ const profileSlice = createSlice({
       console.log('LOADING');
       state.status = Status.LOADING;
       state.user = initialState.user;
+      state.error = null;
     });
     builder.addCase(loginAccount.fulfilled, (state, action) => {
       state.user = action.payload.data.user;
@@ -199,6 +200,7 @@ const profileSlice = createSlice({
     builder.addCase(registrAccount.pending, (state) => {
       state.status = Status.LOADING;
       state.user = initialState.user;
+      state.error = null;
     });
     builder.addCase(registrAccount.fulfilled, (state, action) => {
       state.user = action.payload.data.user;
@@ -209,6 +211,7 @@ const profileSlice = createSlice({
       localStorage.isAuth = true;
     });
     builder.addCase(registrAccount.rejected, (state, action) => {
+      console.log('REJECTED', action.payload);
       state.error = action.payload ? action.payload : 'Произошла ошибка';
       state.status = Status.ERROR;
       state.user = initialState.user;
@@ -217,6 +220,7 @@ const profileSlice = createSlice({
     // Кейсы для логаута
     builder.addCase(logoutAccount.pending, (state) => {
       state.status = Status.LOADING;
+      state.error = null;
     });
     builder.addCase(logoutAccount.fulfilled, (state) => {
       state.status = Status.SUCCESS;
@@ -234,6 +238,7 @@ const profileSlice = createSlice({
     // Кейсы для проверки авторизации
     builder.addCase(checkAuth.pending, (state) => {
       state.status = Status.LOADING;
+      state.error = null;
     });
     builder.addCase(checkAuth.fulfilled, (state, action) => {
       state.status = Status.SUCCESS;
@@ -253,6 +258,7 @@ const profileSlice = createSlice({
     // Кейсы для запроса данных о пользователе
     builder.addCase(fetchUser.pending, (state) => {
       state.status = Status.LOADING;
+      state.error = null;
     });
     builder.addCase(fetchUser.fulfilled, (state, action) => {
       state.status = Status.SUCCESS;
