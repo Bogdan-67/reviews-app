@@ -1,8 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import CreatePollSchema from '../../../models/validation/CreatePollSchema';
-import { IOption } from '../../../models/IOption';
 import { IPoll } from '../../../models/IPoll';
 import {
   Button,
@@ -16,7 +15,9 @@ import {
   Tooltip,
 } from 'antd';
 import { AiOutlineDelete, AiOutlinePlus } from 'react-icons/ai';
-import { features } from 'process';
+import { IQuestionType } from '../../../models/IQuestionType';
+import PollService from '../../../services/PollService';
+import { Status } from '../../../models/Status.enum';
 
 type Props = {};
 
@@ -35,16 +36,43 @@ const CreatePollForm = (props: Props) => {
   });
   const [questions, setQuestions] = useState(getValues('questions'));
   const addButtonRef = useRef<HTMLButtonElement>(null);
+  const [questionTypes, setQuestionTypes] = useState<IQuestionType[]>([]);
+  const [questionTypesStatus, setQuestionTypesStatus] = useState(null);
+
+  const getQuestionTypes = async () => {
+    setQuestionTypesStatus(Status.LOADING);
+    await PollService.fetchQuestionTypes()
+      .then((response) => {
+        setQuestionTypesStatus(Status.SUCCESS);
+        setQuestionTypes(response.data);
+      })
+      .catch((e) => setQuestionTypesStatus(Status.ERROR));
+  };
+  useEffect(() => {
+    getQuestionTypes();
+  }, []);
 
   const addQuestion = () => {
+    const idQuestion = Date.now();
     const newQuestion = {
       question_title: '',
-      id_question: Date.now(),
+      id_question: idQuestion,
       question_type_id: 1,
-      options: [],
+      options: [
+        {
+          id_option: Date.now(),
+          text: '',
+          question_id: idQuestion,
+        },
+      ],
     };
 
     setQuestions((prevQuestions) => [...prevQuestions, newQuestion]);
+
+    const updatedQuestions = [...getValues('questions')];
+    updatedQuestions.push(newQuestion);
+
+    setValue('questions', updatedQuestions);
   };
 
   const removeQuestion = (questionIndex: number) => {
@@ -57,6 +85,18 @@ const CreatePollForm = (props: Props) => {
 
     // Удалите соответствующее значение из формы
     setValue('questions', questions);
+  };
+
+  const updateQuestionType = (
+    questionIndex: number,
+    questionTypeId: number
+  ) => {
+    const updatedQuestions = [...getValues('questions')];
+    updatedQuestions[questionIndex].question_type_id = questionTypeId;
+    setQuestions(updatedQuestions);
+
+    // Убедитесь, что вы также обновляете значение в форме
+    setValue(`questions.${questionIndex}.question_type_id`, questionTypeId);
   };
 
   const addOption = (questionIndex: number) => {
@@ -93,48 +133,53 @@ const CreatePollForm = (props: Props) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)}>
+    <form onSubmit={handleSubmit(submit)} style={{ padding: '15px' }}>
       <h2>Создание опроса</h2>
-      <Controller
-        name="name"
-        control={control}
-        defaultValue=""
-        render={({ field }) => (
-          <>
-            <Input
-              placeholder="Название"
-              status={errors.name ? 'error' : ''}
-              {...field}
-            />
-            {errors.name && <div>{errors.name.message}</div>}
-          </>
-        )}
-      />
-      <Controller
-        name="comment"
-        control={control}
-        defaultValue=""
-        render={({ field }) => (
-          <>
-            <Input
-              placeholder="Комментарий"
-              status={errors.comment ? 'error' : ''}
-              {...field}
-            />
-            {errors.comment && <div>{errors.comment.message}</div>}
-          </>
-        )}
-      />
+      <Flex vertical gap={'small'} style={{ padding: '15px 0' }}>
+        <Controller
+          name="name"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <>
+              <Input
+                placeholder="Название"
+                status={errors.name ? 'error' : ''}
+                {...field}
+              />
+              {errors.name && <div>{errors.name.message}</div>}
+            </>
+          )}
+        />
+        <Controller
+          name="comment"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <>
+              <Input.TextArea
+                placeholder="Комментарий"
+                status={errors.comment ? 'error' : ''}
+                {...field}
+              />
+              {errors.comment && <div>{errors.comment.message}</div>}
+            </>
+          )}
+        />
+      </Flex>
 
       <div>
-        <h3>Вопросы</h3>
+        <h2>Вопросы</h2>
         {questions && questions.length > 0 && (
-          <Row gutter={[15, 15]} style={{ padding: '15px' }}>
+          <Row gutter={[15, 15]} style={{ paddingTop: '15px' }}>
             {questions.map((question, questionIndex) => (
               <Col span={24}>
                 <Card
                   title={
-                    <Row gutter={15}>
+                    <Row gutter={[15, 6]} style={{ padding: '9px 0' }}>
+                      <Col span={24}>
+                        <h4>Вопрос {questionIndex + 1}</h4>
+                      </Col>
                       <Col span={10}>
                         <Controller
                           name={`questions.${questionIndex}.question_title`}
@@ -180,17 +225,28 @@ const CreatePollForm = (props: Props) => {
                             <>
                               <Flex vertical>
                                 <Select
-                                  defaultValue={1}
+                                  defaultActiveFirstOption={true}
                                   style={{ width: 120 }}
-                                  onChange={field.onChange}
-                                  options={[
-                                    { value: 1, label: 'Один из нескольких' },
-                                    {
-                                      value: 2,
-                                      label: 'Несколько из нескольких',
-                                    },
-                                    { value: 3, label: 'Собственный ответ' },
-                                  ]}
+                                  onSelect={(value) => {
+                                    field.onChange(value);
+                                    updateQuestionType(questionIndex, value);
+                                  }}
+                                  options={questionTypes.map(
+                                    (qt: IQuestionType) => ({
+                                      value: qt.id_question_type,
+                                      label: qt.type_name,
+                                    })
+                                  )}
+                                  status={
+                                    questionTypesStatus === Status.ERROR
+                                      ? 'error'
+                                      : ''
+                                  }
+                                  loading={
+                                    questionTypesStatus === Status.LOADING
+                                      ? true
+                                      : false
+                                  }
                                   {...field}
                                 />
                                 {errors.questions &&
@@ -222,83 +278,102 @@ const CreatePollForm = (props: Props) => {
                     </Tooltip>
                   }
                 >
-                  {question.options && question.options.length > 0 && (
-                    <Flex vertical>
-                      {question.options.map((option, optionIndex) => (
-                        <Controller
-                          name={`questions.${questionIndex}.options.${optionIndex}.text`}
-                          control={control}
-                          defaultValue={option.text || ''}
-                          render={({ field }) => (
-                            <>
-                              <Flex>
-                                <Flex vertical>
-                                  <Input
-                                    placeholder="Вариант ответа"
-                                    status={
-                                      errors.questions &&
-                                      errors.questions[questionIndex] &&
-                                      errors.questions[questionIndex].options &&
-                                      errors.questions[questionIndex].options[
-                                        optionIndex
-                                      ]
-                                        ? 'error'
-                                        : ''
-                                    }
-                                    {...field}
-                                  />
-                                  {errors.questions &&
-                                    errors.questions[questionIndex] &&
-                                    errors.questions[questionIndex].options &&
-                                    errors.questions[questionIndex].options[
-                                      optionIndex
-                                    ] && (
-                                      <div>
-                                        {
+                  {question.question_type_id !== 3 && (
+                    <Flex vertical gap={'small'}>
+                      {question.options && question.options.length > 0 && (
+                        <Flex vertical gap={'small'}>
+                          {question.options.map((option, optionIndex) => (
+                            <Controller
+                              name={`questions.${questionIndex}.options.${optionIndex}.text`}
+                              control={control}
+                              defaultValue={option.text || ''}
+                              render={({ field }) => (
+                                <>
+                                  <Flex gap={'small'}>
+                                    <Flex vertical>
+                                      <Input
+                                        placeholder="Вариант ответа"
+                                        status={
+                                          errors.questions &&
+                                          errors.questions[questionIndex] &&
                                           errors.questions[questionIndex]
-                                            .options[optionIndex].message
+                                            .options &&
+                                          errors.questions[questionIndex]
+                                            .options[optionIndex]
+                                            ? 'error'
+                                            : ''
                                         }
-                                      </div>
-                                    )}
-                                </Flex>
-                                <Tooltip title="Удалить вариант ответа">
-                                  <Button
-                                    danger
-                                    onClick={() =>
-                                      removeOption(questionIndex, optionIndex)
-                                    }
-                                  >
-                                    <AiOutlineDelete />
-                                  </Button>
-                                </Tooltip>
-                              </Flex>
-                            </>
-                          )}
-                        />
-                      ))}
+                                        {...field}
+                                      />
+                                      {errors.questions &&
+                                        errors.questions[questionIndex] &&
+                                        errors.questions[questionIndex]
+                                          .options &&
+                                        errors.questions[questionIndex].options[
+                                          optionIndex
+                                        ] && (
+                                          <div>
+                                            {
+                                              errors.questions[questionIndex]
+                                                .options[optionIndex].message
+                                            }
+                                          </div>
+                                        )}
+                                    </Flex>
+                                    <Tooltip
+                                      title="Удалить вариант ответа"
+                                      placement="right"
+                                    >
+                                      <Button
+                                        danger
+                                        onClick={() =>
+                                          removeOption(
+                                            questionIndex,
+                                            optionIndex
+                                          )
+                                        }
+                                      >
+                                        <AiOutlineDelete />
+                                      </Button>
+                                    </Tooltip>
+                                  </Flex>
+                                </>
+                              )}
+                            />
+                          ))}
+                        </Flex>
+                      )}
+
+                      <Tooltip
+                        title="Добавить вариант ответа"
+                        placement="right"
+                      >
+                        <Button
+                          ref={addButtonRef}
+                          onClick={() => addOption(questionIndex)}
+                          style={{ width: '100px' }}
+                        >
+                          <AiOutlinePlus />
+                        </Button>
+                      </Tooltip>
                     </Flex>
                   )}
-
-                  <Tooltip title="Добавить вариант ответа">
-                    <Button
-                      ref={addButtonRef}
-                      onClick={() => addOption(questionIndex)}
-                    >
-                      <AiOutlinePlus />
-                    </Button>
-                  </Tooltip>
                 </Card>
               </Col>
             ))}
           </Row>
         )}
-        <Tooltip title="Добавить вопрос">
-          <Button ref={addButtonRef} onClick={() => addQuestion()}>
+        <Tooltip title="Добавить вопрос" placement="right">
+          <Button
+            ref={addButtonRef}
+            onClick={() => addQuestion()}
+            style={{ width: '100%', marginTop: '15px' }}
+          >
             <AiOutlinePlus />
           </Button>
         </Tooltip>
       </div>
-      <Button type="primary" htmlType="submit">
+      <Button type="primary" htmlType="submit" style={{ marginTop: '15px' }}>
         Создать
       </Button>
     </form>
