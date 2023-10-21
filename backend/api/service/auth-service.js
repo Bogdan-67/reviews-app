@@ -35,7 +35,7 @@ class AuthService {
 
     const hashPassword = await bcrypt.hash(password, 3);
     const newAccount = await db.query(
-      `INSERT INTO accounts(login, password, id_user) VALUES ($1, $2, $3) RETURNING *`,
+      `INSERT INTO accounts(login, password, user_id) VALUES ($1, $2, $3) RETURNING *`,
       [email, hashPassword, newUser.rows[0].id_user],
     );
 

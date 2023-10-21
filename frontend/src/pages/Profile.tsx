@@ -13,9 +13,14 @@ const Profile = (props: Props) => {
 
   return (
     <div>
-      <Button loading={status === Status.LOADING} danger onClick={() => dispatch(logoutAccount())}>
+      <Button
+        loading={status === Status.LOADING}
+        danger
+        onClick={() => dispatch(logoutAccount())}
+      >
         Выйти
       </Button>
+      <CreatePollForm />
     </div>
   );
 };

@@ -5,7 +5,11 @@ import Login from './pages/Login';
 import Registr from './pages/Registr';
 import React, { useEffect, useState } from 'react';
 import { RootState } from './redux/store';
-import { SelectProfile, SelectUserRole, checkAuth } from './redux/slices/profileSlice';
+import {
+  SelectProfile,
+  SelectUserRole,
+  checkAuth,
+} from './redux/slices/profileSlice';
 import { useSelector } from 'react-redux';
 import NotFound from './pages/NotFound/NotFound';
 
@@ -37,36 +41,39 @@ function App() {
     <>
       <Routes location={location} key={location.pathname}>
         <Route
-          path='/login'
+          path="/login"
           element={
-            <RequireNotAuth redirectTo='/'>
+            <RequireNotAuth redirectTo="/">
               <Login />
             </RequireNotAuth>
-          }></Route>
+          }
+        ></Route>
         <Route
-          path='/registration'
+          path="/registration"
           element={
-            <RequireNotAuth redirectTo='/'>
+            <RequireNotAuth redirectTo="/">
               <Registr />
             </RequireNotAuth>
-          }></Route>
+          }
+        ></Route>
         <Route
-          path='/'
+          path="/"
           element={
-            <RequireAuth redirectTo='/login'>
+            <RequireAuth redirectTo="/login">
               <MainLayout />
             </RequireAuth>
-          }>
-          <Route path='' element={<Profile />}></Route>
-          <Route path='requests' element={<></>}>
-            <Route path='' element={<TableRequests />}></Route>
-            <Route path='create' element={<CreateRequest />}></Route>
+          }
+        >
+          <Route path="" element={<Profile />}></Route>
+          <Route path="requests">
+            <Route path="" element={<TableRequests />}></Route>
+            <Route path="create" element={<CreateRequest />}></Route>
           </Route>
-          <Route path='poll' element={<></>}>
-            <Route path='create' element={<CreatePoll />}></Route>
-            <Route path='complete/:id' element={<CompletePoll />}></Route>
+          <Route path="poll">
+            <Route path="create" element={<CreatePoll />}></Route>
+            <Route path="complete/:id" element={<CompletePoll />}></Route>
           </Route>
-          <Route path='*' element={<NotFound />}></Route>
+          <Route path="*" element={<NotFound />}></Route>
         </Route>
       </Routes>
     </>
@@ -89,7 +96,11 @@ function RequireEditor({ children, redirectTo }) {
   const role = localStorage.getItem('role');
   console.log('role', role);
   if (role !== 'EDITOR' && role !== 'ADMIN') alert('Нет прав доступа!');
-  return role === 'EDITOR' || role === 'ADMIN' ? children : <Navigate to={redirectTo} />;
+  return role === 'EDITOR' || role === 'ADMIN' ? (
+    children
+  ) : (
+    <Navigate to={redirectTo} />
+  );
 }
 
 function RequireAdmin({ children, redirectTo }) {
