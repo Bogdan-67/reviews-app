@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import classnames from 'classnames';
 import { Link } from 'react-router-dom';
 import { Form, Field, withFormik, FormikProps } from 'formik';
-import logo from '../../assets/img/Logo_VolleyBall.png';
 import RegisterSchema from '../../models/validation/RegisterSchema';
 import styles from './RegistrForm.module.scss';
 import MaskedInput from 'react-text-mask';
@@ -49,7 +48,6 @@ const InnerForm = (props: FormikProps<FormValues>) => {
   const { values, touched, errors, isSubmitting } = props;
   return (
     <Form className={styles.auth}>
-      <img className={styles.auth__logo} width='44' src={logo} alt='Volleyball logo'></img>
       <h2 className={styles.auth__title}>Регистрация</h2>
       <div className={styles.auth__inputs}>
         <div className={styles.auth__inputs_box1}>
