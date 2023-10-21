@@ -1,4 +1,3 @@
-const { json } = require('express');
 const db = require('../db');
 const ApiError = require('../exceptions/api-error');
 
@@ -50,22 +49,6 @@ class PollsService {
     await db.query('COMMIT');
 
     return 'Опрос успешно сохранен';
-
-    // const questionTypes = await db.query(`SELECT * FROM question_types`);
-
-    // const questionTypesRows = questionTypes.rows;
-    // const questionTypesObjects = [];
-
-    // for (const row of questionTypesRows) {
-    //   const questionTypesObject = {
-    //     id_question_type: row.id_question_type,
-    //     type_name: row.type_name,
-    //   };
-
-    //   questionTypesObjects.push(questionTypesObject);
-    // }
-    // await db.query('COMMIT');
-    // return questionTypesObjects;
   }
 }
 
