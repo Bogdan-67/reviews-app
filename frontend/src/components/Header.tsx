@@ -10,7 +10,7 @@ import { useAppDispatch } from '../redux/store';
 
 const Header: FC = () => {
   const [scrollPosition, setScrollPosition] = useState<number>(0);
-  const { name, surname, patronimyc } = useAppSelector(SelectUser);
+  const { firstname, lastname, middlename } = useAppSelector(SelectUser);
   const role = useAppSelector(SelectUserRole);
 
   const dispatch = useAppDispatch();
@@ -56,7 +56,7 @@ const Header: FC = () => {
                   ' ' +
                   name.split('')[0].toUpperCase() +
                   '.' +
-                  (patronimyc ? ' ' + patronimyc.split('')[0].toUpperCase() + '.' : '')}
+                  (middlename ? ' ' + middlename.split('')[0].toUpperCase() + '.' : '')}
               </Link>
             )}
             {role === 'USER' && (
@@ -106,7 +106,7 @@ const Header: FC = () => {
                     ' ' +
                     name.split('')[0].toUpperCase() +
                     '.' +
-                    (patronimyc ? ' ' + patronimyc.split('')[0].toUpperCase() + '.' : '')}
+                    (middlename ? ' ' + middlename.split('')[0].toUpperCase() + '.' : '')}
                 </Link>
               )}
               {role === 'USER' && (
