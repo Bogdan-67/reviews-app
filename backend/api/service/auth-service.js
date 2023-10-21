@@ -28,7 +28,7 @@ class AuthService {
     }
     const checkLogin = await db.query(
       `SELECT * FROM accounts WHERE login = $1`,
-      [login]
+      [email]
     );
     if (checkLogin.rows[0]) {
       throw ApiError.BadRequest(
@@ -42,7 +42,7 @@ class AuthService {
     const hashPassword = await bcrypt.hash(password, 3);
     const newAccount = await db.query(
       `INSERT INTO accounts(login, password, id_user) VALUES ($1, $2, $3) RETURNING *`,
-      [login, hashPassword, newUser.rows[0].id_user]
+      [email, hashPassword, newUser.rows[0].id_user]
     );
     const newUserRole = await db.query(
       `INSERT INTO user_roles(account_id, role_id)
