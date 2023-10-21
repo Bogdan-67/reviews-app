@@ -1,13 +1,14 @@
 const authService = require("../service/auth-service");
 const ApiError = require("../exceptions/api-error");
 const { validationResult } = require("express-validator");
+const db = require("../db");
 class AuthController {
   async createUser(req, res, next) {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return next(
-          ApiError.BadRequest("Ошибка при валидации", errors.array()),
+          ApiError.BadRequest("Ошибка при валидации", errors.array())
         );
       }
 
@@ -23,6 +24,7 @@ class AuthController {
       });
       res.status(200).json(createdUser);
     } catch (e) {
+      await db.query("ROLLBACK");
       next(e);
     }
   }

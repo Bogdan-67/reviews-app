@@ -9,7 +9,17 @@ const path = require("path");
 const sharp = require("sharp");
 
 class AuthService {
-  async createUser({ firstname, lastname, middlename, email, phone }) {
+  async createUser({
+    firstname,
+    lastname,
+    middlename,
+    email,
+    phone,
+    password,
+  }) {
+    // Начало транзакции
+    await db.query("BEGIN");
+
     const checkPhone = await db.query(`SELECT * FROM users WHERE phone = $1`, [
       phone,
     ]);
@@ -18,6 +28,7 @@ class AuthService {
         "Пользователь с таким номером телефона уже зарегистрирован!"
       );
     }
+
     const checkEmail = await db.query(`SELECT * FROM users WHERE email = $1`, [
       email,
     ]);
@@ -26,6 +37,7 @@ class AuthService {
         "Пользователь с такой почтой уже зарегистрирован!"
       );
     }
+
     const checkLogin = await db.query(
       `SELECT * FROM accounts WHERE login = $1`,
       [email]
@@ -35,24 +47,25 @@ class AuthService {
         "Пользователь с таким логином уже зарегистрирован!"
       );
     }
+
     const newUser = await db.query(
       `INSERT INTO users(firstname, lastname, middlename, phone, email) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
       [firstname, lastname, middlename, phone, email]
     );
+
     const hashPassword = await bcrypt.hash(password, 3);
     const newAccount = await db.query(
       `INSERT INTO accounts(login, password, id_user) VALUES ($1, $2, $3) RETURNING *`,
       [email, hashPassword, newUser.rows[0].id_user]
     );
+
     const newUserRole = await db.query(
       `INSERT INTO user_roles(account_id, role_id)
-      VALUES ($1, (SELECT role_name FROM roles WHERE id_role = 1))
-      RETURNING *`,
+        VALUES ($1, 1)
+        RETURNING *`,
       [newAccount.rows[0].id_account]
     );
-    // const role = await db.query(`SELECT * FROM roles WHERE id_role = $1`, [
-    //   newAccount.rows[0].role_id,
-    // ]);
+
     const userDto = new UserDTO({
       ...newAccount.rows[0],
       ...newUserRole.rows[0].roles,
@@ -63,6 +76,7 @@ class AuthService {
       newAccount.rows[0].id_account,
       tokens.refreshToken
     );
+    await db.query("COMMIT");
     return { user: { ...userDto }, ...tokens };
   }
 
