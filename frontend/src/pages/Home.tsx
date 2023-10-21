@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAppDispatch } from '../redux/store';
 import { logoutAccount } from '../redux/slices/profileSlice';
+import {useAppDispatch} from "../hooks/redux";
 export const Home: React.FC = () => {
   const dispatch = useAppDispatch();
 

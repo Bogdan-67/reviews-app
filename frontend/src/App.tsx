@@ -9,8 +9,7 @@ import { SelectUserRole, checkAuth } from './redux/slices/profileSlice';
 import { useSelector } from 'react-redux';
 import { Status } from './redux/slices/profileSlice';
 import NotFound from './pages/NotFound/NotFound';
-import LoadingSpinner from './components/common/LoadingSpinner/LoadingSpinner';
-import Footer from './components/Footer';
+
 import { useAppDispatch } from './hooks/redux';
 import Profile from './pages/Profile';
 import MainLayout from './layouts/MainLayout';
@@ -32,7 +31,7 @@ function App() {
     }
   }, []);
 
-  if (status === Status.LOADING) return <LoadingSpinner />;
+  if (status === Status.LOADING) return <>Loading...</>;
 
   return (
     <>

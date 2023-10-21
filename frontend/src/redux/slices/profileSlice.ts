@@ -134,24 +134,6 @@ export const fetchUser = createAsyncThunk<AxiosResponse<IUser>, FetchUserParams>
     }
   },
 );
-// Функция обновления данных пользователя
-export const updateUser = createAsyncThunk<
-  AxiosResponse<IUser>,
-  { id_user: number; userData: Partial<IUser> }
->('user/updateUserData', async (params, { rejectWithValue }) => {
-  try {
-    const { id_user, userData } = params;
-    const response = await UserService.updateUser(id_user, userData);
-    console.log('response', response);
-    return response;
-  } catch (error) {
-    if (!error.response) {
-      throw error;
-    }
-    alert(error.response?.data?.message);
-    return rejectWithValue(error.response?.data?.message);
-  }
-});
 
 // Ключи статуса
 export enum Status {
@@ -192,12 +174,6 @@ const profileSlice = createSlice({
     },
     setError(state) {
       state.status = Status.ERROR;
-    },
-    setUpdateUserStatus(state) {
-      state.updateUserStatus = Status.ERROR;
-    },
-    setImg(state, action: PayloadAction<string>) {
-      state.user.img = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -259,22 +235,6 @@ const profileSlice = createSlice({
       state.status = Status.ERROR;
     });
 
-    // Кейсы для обновления данных пользователя
-    builder.addCase(updateUser.pending, (state) => {
-      state.updateUserStatus = Status.LOADING;
-    });
-
-    builder.addCase(updateUser.fulfilled, (state, action) => {
-      state.updateUserStatus = Status.SUCCESS;
-      state.user = action.payload.data;
-      localStorage.setItem('role', action.payload.data.role);
-      console.log('Данные пользователя', action.payload.data.name, action.payload.data);
-    });
-
-    builder.addCase(updateUser.rejected, (state) => {
-      state.updateUserStatus = Status.ERROR; // Устанавливаем статус ERROR при ошибке при обновлении данных пользователя
-    });
-
     // Кейсы для проверки авторизации
     builder.addCase(checkAuth.pending, (state) => {
       state.status = Status.LOADING;
@@ -312,11 +272,10 @@ const profileSlice = createSlice({
   },
 });
 
-export const { setUser, setError, setUpdateUserStatus, setImg } = profileSlice.actions;
+export const { setUser, setError} = profileSlice.actions;
 export const SelectProfile = (state: RootState) => state.profile;
 export const SelectUser = (state: RootState) => state.profile.user;
 export const SelectUserRole = (state: RootState) => state.profile.user.role;
-export const SelectAccountID = (state: RootState) => state.profile.user.id_account;
 export const SelectUserID = (state: RootState) => state.profile.user.id_user;
 
 export default profileSlice.reducer;
