@@ -3,33 +3,40 @@ import './scss/app.scss';
 import Header from './components/Header';
 import Login from './pages/Login';
 import Registr from './pages/Registr';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RootState } from './redux/store';
-import { SelectUserRole, checkAuth } from './redux/slices/profileSlice';
+import { SelectProfile, SelectUserRole, checkAuth } from './redux/slices/profileSlice';
 import { useSelector } from 'react-redux';
-import { Status } from './redux/slices/profileSlice';
 import NotFound from './pages/NotFound/NotFound';
 
-import { useAppDispatch } from './hooks/redux';
+import { useAppDispatch, useAppSelector } from './hooks/redux';
 import Profile from './pages/Profile';
 import MainLayout from './layouts/MainLayout';
 import TableRequests from './pages/Requests/TableRequests';
 import CreateRequest from './pages/Requests/CreateRequest';
 import CreatePoll from './pages/Poll/CreatePoll';
 import CompletePoll from './pages/Poll/CompletePoll';
+import { message } from 'antd';
+import { Status } from './models/Status.enum';
 
 function App() {
   const dispatch = useAppDispatch();
-  const status = useSelector((state: RootState) => state.profile.status);
   const isAuth = useSelector((state: RootState) => state.profile.isAuth);
   const location = useLocation();
   const [blockHeight, setBlockHeight] = useState(0);
+  const { error, status } = useAppSelector(SelectProfile);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (localStorage.getItem('token')) {
       dispatch(checkAuth());
     }
   }, []);
+
+  useEffect(() => {
+    if (error) {
+      message.error(error);
+    }
+  }, [error]);
 
   if (status === Status.LOADING) return <>Loading...</>;
 

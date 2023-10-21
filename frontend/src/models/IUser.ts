@@ -2,10 +2,9 @@ export interface IUser {
   id_user: number;
   firstname: string;
   lastname: string;
-  middlename: string;// отчество
+  middlename: string; // отчество
   email: string;
   phone: string;
-  login: string;
   role: string;
-  rating:number;
+  rating: number;
 }

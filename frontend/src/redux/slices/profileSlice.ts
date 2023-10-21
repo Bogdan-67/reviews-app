@@ -6,6 +6,7 @@ import axios, { AxiosResponse } from 'axios';
 import { IUser } from '../../models/IUser';
 import { API_URL } from '../../http';
 import UserService from '../../services/UserService';
+import { Status } from '../../models/Status.enum';
 
 export type LoginParams = {
   firstname: string;
@@ -29,8 +30,6 @@ export type RegistrParams = {
   middlename: string;
   email: string;
   phone: string;
-  team: string;
-  login: string;
   password: string;
   recaptcha: string; // Добавлено поле для капчи
 };
@@ -46,76 +45,80 @@ const localAuth = (local: string) => {
 };
 
 // Функция логина
-export const loginAccount = createAsyncThunk<AxiosResponse<AuthResponse>, LoginParams>(
-  'user/loginStatus',
-  async (params, { rejectWithValue }) => {
-    console.log('FUNCTION LOGIN');
-    try {
-      const { login, password } = params;
-      const response = await AuthService.login(login, password);
-      console.log('login', response);
-      return response;
-    } catch (error) {
-      if (!error.response) {
-        return rejectWithValue(error.message);
-      } else return rejectWithValue(error.response.data.message);
-    }
-  },
-);
-
-// Функция регистрации
-export const registrAccount = createAsyncThunk<AxiosResponse<AuthResponse>, RegistrParams>(
-  'user/registrStatus',
-  async (params, { rejectWithValue }) => {
-    try {
-      const { firstname, lastname, middlename, phone, email, team, login, password, recaptcha } = params;
-      const response = await AuthService.registration(
-          login,
-          password,
-          firstname,
-          lastname,
-          middlename,
-        email,
-        phone,
-        team,
-        recaptcha,
-      );
-      console.log('registration', response);
-      return response;
-    } catch (error) {
-      if (!error.response) {
-        return rejectWithValue(error.message);
-      } else return rejectWithValue(error.response.data.message);
-    }
-  },
-);
-
-// Функция логаута
-export const logoutAccount = createAsyncThunk<void, void>('user/logoutStatus', async () => {
+export const loginAccount = createAsyncThunk<
+  AxiosResponse<AuthResponse>,
+  LoginParams,
+  { rejectValue: string }
+>('user/loginStatus', async (params, { rejectWithValue }) => {
+  console.log('FUNCTION LOGIN');
   try {
-    await AuthService.logout();
+    const { login, password } = params;
+    const response = await AuthService.login(login, password);
+    console.log('login', response);
+    return response;
   } catch (error) {
-    console.log(error.response?.data?.message);
+    if (!error.response.data.message) {
+      return rejectWithValue(error.message);
+    } else return rejectWithValue(error.response.data.message);
   }
 });
 
-// Функция проверки авторизации
-export const checkAuth = createAsyncThunk<AxiosResponse<AuthResponse>, void>(
-  'user/checkAuthStatus',
-  async (params, { rejectWithValue }) => {
+// Функция регистрации
+export const registrAccount = createAsyncThunk<
+  AxiosResponse<AuthResponse>,
+  RegistrParams,
+  { rejectValue: string }
+>('user/registrStatus', async (params, { rejectWithValue }) => {
+  try {
+    const { firstname, lastname, middlename, phone, email, password, recaptcha } = params;
+    const response = await AuthService.registration(
+      password,
+      firstname,
+      lastname,
+      middlename,
+      email,
+      phone,
+      recaptcha,
+    );
+    return response;
+  } catch (error) {
+    if (!error.response.data.message) {
+      return rejectWithValue(error.message);
+    } else return rejectWithValue(error.response.data.message);
+  }
+});
+
+// Функция логаута
+export const logoutAccount = createAsyncThunk<void, void, { rejectValue: string }>(
+  'user/logoutStatus',
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get<AuthResponse>(`${API_URL}/refresh`, {
-        withCredentials: true,
-      });
-      console.log('RESPONSE', response);
-      return response;
+      await AuthService.logout();
     } catch (error) {
-      if (!error.response) {
+      if (!error.response.data.message) {
         return rejectWithValue(error.message);
       } else return rejectWithValue(error.response.data.message);
     }
   },
 );
+
+// Функция проверки авторизации
+export const checkAuth = createAsyncThunk<
+  AxiosResponse<AuthResponse>,
+  void,
+  { rejectValue: string }
+>('user/checkAuthStatus', async (params, { rejectWithValue }) => {
+  try {
+    const response = await axios.get<AuthResponse>(`${API_URL}/refresh`, {
+      withCredentials: true,
+    });
+    return response;
+  } catch (error) {
+    if (!error.response.data.message) {
+      return rejectWithValue(error.message);
+    } else return rejectWithValue(error.response.data.message);
+  }
+});
 
 // Функция запроса данных о пользователе
 export const fetchUser = createAsyncThunk<AxiosResponse<IUser>, FetchUserParams>(
@@ -135,16 +138,10 @@ export const fetchUser = createAsyncThunk<AxiosResponse<IUser>, FetchUserParams>
   },
 );
 
-// Ключи статуса
-export enum Status {
-  LOADING = 'loading',
-  SUCCESS = 'success',
-  ERROR = 'error',
-}
-
 export interface Profile {
   user: IUser;
   status: Status;
+  error: string;
   isAuth: boolean;
   updateUserStatus: Status;
 }
@@ -157,11 +154,11 @@ const initialState: Profile = {
     middlename: '',
     email: '',
     phone: '',
-    rating:10,
+    rating: 10,
     role: '',
-    login: '',
   },
   status: Status.SUCCESS,
+  error: '',
   isAuth: localStorage.isAuth ? localAuth(localStorage.isAuth) : false,
   updateUserStatus: Status.SUCCESS, // Изначально статус обновления данных пользователя установлен в SUCCESS
 };
@@ -193,8 +190,7 @@ const profileSlice = createSlice({
       localStorage.isAuth = true;
     });
     builder.addCase(loginAccount.rejected, (state, action) => {
-      console.log('REJECTED');
-      alert(action.payload);
+      state.error = action.payload ? action.payload : 'Произошла ошибка';
       state.status = Status.ERROR;
       state.user = initialState.user;
     });
@@ -213,8 +209,7 @@ const profileSlice = createSlice({
       localStorage.isAuth = true;
     });
     builder.addCase(registrAccount.rejected, (state, action) => {
-      console.log('REJECTED');
-      alert(action.payload);
+      state.error = action.payload ? action.payload : 'Произошла ошибка';
       state.status = Status.ERROR;
       state.user = initialState.user;
     });
@@ -231,8 +226,9 @@ const profileSlice = createSlice({
       localStorage.isAuth = false;
       state.user = initialState.user;
     });
-    builder.addCase(logoutAccount.rejected, (state) => {
+    builder.addCase(logoutAccount.rejected, (state, action) => {
       state.status = Status.ERROR;
+      state.error = action.payload ? action.payload : 'Произошла ошибка';
     });
 
     // Кейсы для проверки авторизации
@@ -248,9 +244,8 @@ const profileSlice = createSlice({
       state.user = action.payload.data.user;
     });
     builder.addCase(checkAuth.rejected, (state, action) => {
-      console.log('ERROR');
-      alert(action.payload);
       state.isAuth = false;
+      state.error = action.payload ? action.payload : 'Произошла ошибка';
       localStorage.isAuth = false;
       state.status = Status.ERROR;
     });
@@ -263,7 +258,6 @@ const profileSlice = createSlice({
       state.status = Status.SUCCESS;
       state.user = action.payload.data;
       localStorage.setItem('role', action.payload.data.role);
-      console.log('login', action.payload.data.login);
     });
     builder.addCase(fetchUser.rejected, (state) => {
       console.log('ERROR');
@@ -272,7 +266,7 @@ const profileSlice = createSlice({
   },
 });
 
-export const { setUser, setError} = profileSlice.actions;
+export const { setUser, setError } = profileSlice.actions;
 export const SelectProfile = (state: RootState) => state.profile;
 export const SelectUser = (state: RootState) => state.profile.user;
 export const SelectUserRole = (state: RootState) => state.profile.user.role;
