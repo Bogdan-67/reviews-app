@@ -33,7 +33,7 @@ CREATE TABLE user_roles(
 CREATE TABLE tokens(
     account_id SERIAL PRIMARY KEY,
     FOREIGN KEY (account_id) REFERENCES accounts(id_account) ON DELETE CASCADE,
-    refresh_token VARCHAR(255) NOT NULL
+    refresh_token TEXT NOT NULL
 );
 
 CREATE TABLE status_team(

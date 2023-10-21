@@ -7,14 +7,9 @@ import { IUser } from '../../models/IUser';
 import { API_URL } from '../../http';
 import UserService from '../../services/UserService';
 import { Status } from '../../models/Status.enum';
+import { message } from 'antd';
 
 export type LoginParams = {
-  firstname: string;
-  lastname: string;
-  middlename: string;
-  email: string;
-  phone: string;
-  team: string;
   login: string;
   password: string;
 };
@@ -50,11 +45,9 @@ export const loginAccount = createAsyncThunk<
   LoginParams,
   { rejectValue: string }
 >('user/loginStatus', async (params, { rejectWithValue }) => {
-  console.log('FUNCTION LOGIN');
   try {
     const { login, password } = params;
     const response = await AuthService.login(login, password);
-    console.log('login', response);
     return response;
   } catch (error) {
     if (!error.response.data.message) {
@@ -183,7 +176,7 @@ const profileSlice = createSlice({
     });
     builder.addCase(loginAccount.fulfilled, (state, action) => {
       state.user = action.payload.data.user;
-      console.log('USer', state.user);
+      message.success(`Добро пожаловать, ${action.payload.data.user.firstname}!`);
       state.status = Status.SUCCESS;
       localStorage.setItem('token', action.payload.data.accessToken);
       localStorage.setItem('role', action.payload.data.user.role);
@@ -204,6 +197,7 @@ const profileSlice = createSlice({
     });
     builder.addCase(registrAccount.fulfilled, (state, action) => {
       state.user = action.payload.data.user;
+      message.success(`Добро пожаловать, ${action.payload.data.user.firstname}!`);
       state.status = Status.SUCCESS;
       localStorage.setItem('token', action.payload.data.accessToken);
       localStorage.setItem('role', action.payload.data.user.role);
