@@ -86,10 +86,9 @@ class AuthService {
       account.rows[0].user_id,
     ]);
 
-    const userDto = new UserDTO({ ...roles.rows[0], ...user.rows[0] });
-    console.log('userDto: ', userDto);
+    const userDto = new UserDTO({ ...roles.rows[0], ...user.rows[0], ...account.rows[0] });
     const tokens = tokenService.generateTokens({ ...userDto });
-    await tokenService.saveToken(account.rows[0].id_account, tokens.refreshToken);
+    await tokenService.saveToken(userDto.id_account, tokens.refreshToken);
     return { ...tokens, user: { ...userDto } };
   }
 
