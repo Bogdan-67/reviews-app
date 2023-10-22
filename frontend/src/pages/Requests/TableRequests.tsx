@@ -7,6 +7,7 @@ import { SelectRequests, fetchRequests } from '../../redux/slices/requstSlice';
 import useSelection from 'antd/es/table/hooks/useSelection';
 import { IRequest } from '../../models/IRequest';
 import SetRespondentsModal from '../../components/Modals/SetRespondentsModal';
+import styles from './requests.module.scss';
 
 interface DataType {
   key: string;
@@ -92,8 +93,9 @@ const TableRequests = (props: Props) => {
   }, []);
   return (
     <>
-      <Flex vertical align="center">
-        <h1>Запросы на обратную связь</h1>
+      <Flex vertical align="flex-start">
+        <h1 className={styles.requests}>Запросы на обратную связь</h1>
+        <div className={styles.TableReq}></div>
         <Table
           style={{ width: '100%' }}
           columns={columns}
