@@ -5,6 +5,7 @@ const db = require('../db');
 class RequestController {
   async createRequest(req, res, next) {
     try {
+      console.log('Body', req.body);
       const createdRequest = await requestService.createRequest(req.body);
       res.status(200).json(createdRequest);
     } catch (e) {
