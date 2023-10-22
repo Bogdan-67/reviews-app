@@ -5,14 +5,13 @@ import RequestSchema from '../../models/validation/RequestSchema';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { SelectProfile } from '../../redux/slices/profileSlice';
 import { Button, message, Select, SelectProps, Space } from 'antd';
-import styles from '../../components/Forms/Registration/Registration.module.scss';
-import { Status } from '../../models/Status.enum';
 import { createRequest } from '../../redux/slices/requstSlice';
-
+import styles from './requests.module.scss';
+import { Status } from '../../models/Status.enum';
 type Props = {};
 
 export interface RequstProps {
-  id_interns: number[];
+  value: number[];
 }
 
 const CreateRequest = () => {
@@ -28,22 +27,16 @@ const CreateRequest = () => {
   const [isError, setIsError] = useState<string>(null);
   const dispatch = useAppDispatch();
   const { error, status } = useAppSelector(SelectProfile);
+  const [value, setValues] = useState([7]);
   // Относится к select
   interface ItemProps {
     label: string;
-    value: string;
+    value: number;
   }
-
-  const options: ItemProps[] = [];
-
-  for (let i = 10; i < 36; i++) {
-    const value = i.toString(36) + i;
-    options.push({
-      label: `${value}`,
-      value,
-    });
-  }
-
+  const label = 'name1';
+  const infoUsers = [1, 2];
+  const options: ItemProps[] = [{ label, value: infoUsers[1] }];
+  console.log('value', value);
   useEffect(() => {
     console.log(error);
     if (error) {
@@ -51,42 +44,48 @@ const CreateRequest = () => {
     }
   }, [error]);
   const author = useAppSelector((state) => state.profile.user.id_user);
-  const submit: SubmitHandler<RequstProps> = async ({ id_interns }) => {
+  console.log('Автор:', author);
+  const submit: SubmitHandler<RequstProps> = async () => {
     setIsLoading(true);
-    console.log(id_interns);
+    console.log('value ', value);
     const type_request = 1; //fixme Исправить на тот, который должен быть назначен (Стажеры или Сотрудники)
-    dispatch(createRequest({ author, id_interns, type_request }));
+    dispatch(createRequest({ author, id_interns: value, type_request }));
   };
-  const [value, setValue] = useState(['a10', 'c12', 'h17', 'j19', 'k20']);
 
   const selectProps: SelectProps = {
     mode: 'multiple',
     style: { width: '100%' },
     value,
     options,
-    onChange: (newValue: string[]) => {
-      setValue(newValue);
+    onChange: (newValue: number[]) => {
+      console.log('newValue', newValue);
+      setValues(newValue);
     },
-    placeholder: 'Select Item...',
+    placeholder: 'Выбирите элемент...',
     maxTagCount: 'responsive',
   };
-
+  useEffect(() => {
+    console.log('Страница создания запроса');
+    // users = useAppSelector(state => state.usersReducer.)
+  }, []);
   return (
-    <form className={styles.form} onSubmit={handleSubmit(submit)}>
-      <div className={styles.inputs}>
-        <Space direction="vertical" style={{ width: '100%' }}>
-          <Select {...selectProps} />
-          <Select {...selectProps} disabled />
-        </Space>
-      </div>
-      <Button
-        loading={status === Status.LOADING}
-        type="primary"
-        htmlType="submit"
-      >
-        Создать запрос
-      </Button>
-    </form>
+    <>
+      <form className={styles.form} onSubmit={handleSubmit(submit)}>
+        <div className={styles.inputs}>
+          <Space direction="vertical" style={{ width: '100%' }}>
+            <Select {...selectProps} />
+            {/*<Select {...selectProps} disabled />*/}
+          </Space>
+        </div>
+        <Button
+          loading={status === Status.LOADING}
+          type="primary"
+          htmlType="submit"
+        >
+          Создать запрос
+        </Button>
+      </form>
+    </>
   );
 };
 

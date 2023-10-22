@@ -1,4 +1,9 @@
-import { createSlice, createAsyncThunk, PayloadAction, createSelector } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  createAsyncThunk,
+  PayloadAction,
+  createSelector,
+} from '@reduxjs/toolkit';
 import { RootState } from '../store';
 import AuthService from '../../services/AuthService';
 import { AuthResponse } from '../../models/response/AuthResponse';
@@ -7,14 +12,9 @@ import { IUser } from '../../models/IUser';
 import { API_URL } from '../../http';
 import UserService from '../../services/UserService';
 import { Status } from '../../models/Status.enum';
+import { message } from 'antd';
 
 export type LoginParams = {
-  firstname: string;
-  lastname: string;
-  middlename: string;
-  email: string;
-  phone: string;
-  team: string;
   login: string;
   password: string;
 };
@@ -50,11 +50,9 @@ export const loginAccount = createAsyncThunk<
   LoginParams,
   { rejectValue: string }
 >('user/loginStatus', async (params, { rejectWithValue }) => {
-  console.log('FUNCTION LOGIN');
   try {
     const { login, password } = params;
     const response = await AuthService.login(login, password);
-    console.log('login', response);
     return response;
   } catch (error) {
     if (!error.response.data.message) {
@@ -70,7 +68,15 @@ export const registrAccount = createAsyncThunk<
   { rejectValue: string }
 >('user/registrStatus', async (params, { rejectWithValue }) => {
   try {
-    const { firstname, lastname, middlename, phone, email, password, recaptcha } = params;
+    const {
+      firstname,
+      lastname,
+      middlename,
+      phone,
+      email,
+      password,
+      recaptcha,
+    } = params;
     const response = await AuthService.registration(
       password,
       firstname,
@@ -89,18 +95,19 @@ export const registrAccount = createAsyncThunk<
 });
 
 // Функция логаута
-export const logoutAccount = createAsyncThunk<void, void, { rejectValue: string }>(
-  'user/logoutStatus',
-  async (_, { rejectWithValue }) => {
-    try {
-      await AuthService.logout();
-    } catch (error) {
-      if (!error.response.data.message) {
-        return rejectWithValue(error.message);
-      } else return rejectWithValue(error.response.data.message);
-    }
-  },
-);
+export const logoutAccount = createAsyncThunk<
+  void,
+  void,
+  { rejectValue: string }
+>('user/logoutStatus', async (_, { rejectWithValue }) => {
+  try {
+    await AuthService.logout();
+  } catch (error) {
+    if (!error.response.data.message) {
+      return rejectWithValue(error.message);
+    } else return rejectWithValue(error.response.data.message);
+  }
+});
 
 // Функция проверки авторизации
 export const checkAuth = createAsyncThunk<
@@ -121,22 +128,22 @@ export const checkAuth = createAsyncThunk<
 });
 
 // Функция запроса данных о пользователе
-export const fetchUser = createAsyncThunk<AxiosResponse<IUser>, FetchUserParams>(
-  'user/fetchUserStatus',
-  async (params, { rejectWithValue }) => {
-    try {
-      const { id_account } = params;
-      const response = await UserService.fetchUser(id_account);
-      return response;
-    } catch (error) {
-      if (!error.response) {
-        throw error;
-      }
-      alert(error.response?.data?.message);
-      return rejectWithValue(error.response?.data?.message);
+export const fetchUser = createAsyncThunk<
+  AxiosResponse<IUser>,
+  FetchUserParams
+>('user/fetchUserStatus', async (params, { rejectWithValue }) => {
+  try {
+    const { id_account } = params;
+    const response = await UserService.fetchUser(id_account);
+    return response;
+  } catch (error) {
+    if (!error.response) {
+      throw error;
     }
-  },
-);
+    alert(error.response?.data?.message);
+    return rejectWithValue(error.response?.data?.message);
+  }
+});
 
 export interface Profile {
   user: IUser;
@@ -155,7 +162,7 @@ const initialState: Profile = {
     email: '',
     phone: '',
     rating: 10,
-    role: '',
+    roles: [],
   },
   status: Status.SUCCESS,
   error: '',
@@ -183,10 +190,13 @@ const profileSlice = createSlice({
     });
     builder.addCase(loginAccount.fulfilled, (state, action) => {
       state.user = action.payload.data.user;
-      console.log('USer', state.user);
+      message.success(
+        `Добро пожаловать, ${action.payload.data.user.firstname}!`,
+      );
       state.status = Status.SUCCESS;
       localStorage.setItem('token', action.payload.data.accessToken);
-      localStorage.setItem('role', action.payload.data.user.role);
+      const rolesString = JSON.stringify(action.payload.data.user.roles);
+      localStorage.setItem('roles', rolesString);
       state.isAuth = true;
       localStorage.isAuth = true;
     });
@@ -204,9 +214,13 @@ const profileSlice = createSlice({
     });
     builder.addCase(registrAccount.fulfilled, (state, action) => {
       state.user = action.payload.data.user;
+      message.success(
+        `Добро пожаловать, ${action.payload.data.user.firstname}!`,
+      );
       state.status = Status.SUCCESS;
       localStorage.setItem('token', action.payload.data.accessToken);
-      localStorage.setItem('role', action.payload.data.user.role);
+      const rolesString = JSON.stringify(action.payload.data.user.roles);
+      localStorage.setItem('roles', rolesString);
       state.isAuth = true;
       localStorage.isAuth = true;
     });
@@ -225,7 +239,7 @@ const profileSlice = createSlice({
     builder.addCase(logoutAccount.fulfilled, (state) => {
       state.status = Status.SUCCESS;
       localStorage.removeItem('token');
-      localStorage.removeItem('role');
+      localStorage.removeItem('roles');
       state.isAuth = false;
       localStorage.isAuth = false;
       state.user = initialState.user;
@@ -243,7 +257,8 @@ const profileSlice = createSlice({
     builder.addCase(checkAuth.fulfilled, (state, action) => {
       state.status = Status.SUCCESS;
       localStorage.setItem('token', action.payload.data.accessToken);
-      localStorage.setItem('role', action.payload.data.user.role);
+      const rolesString = JSON.stringify(action.payload.data.user.roles);
+      localStorage.setItem('roles', rolesString);
       state.isAuth = true;
       localStorage.isAuth = true;
       state.user = action.payload.data.user;
@@ -263,7 +278,8 @@ const profileSlice = createSlice({
     builder.addCase(fetchUser.fulfilled, (state, action) => {
       state.status = Status.SUCCESS;
       state.user = action.payload.data;
-      localStorage.setItem('role', action.payload.data.role);
+      const rolesString = JSON.stringify(action.payload.data.roles);
+      localStorage.setItem('roles', rolesString);
     });
     builder.addCase(fetchUser.rejected, (state) => {
       console.log('ERROR');
@@ -275,7 +291,7 @@ const profileSlice = createSlice({
 export const { setUser, setError } = profileSlice.actions;
 export const SelectProfile = (state: RootState) => state.profile;
 export const SelectUser = (state: RootState) => state.profile.user;
-export const SelectUserRole = (state: RootState) => state.profile.user.role;
+export const SelectUserRoles = (state: RootState) => state.profile.user.roles;
 export const SelectUserID = (state: RootState) => state.profile.user.id_user;
 
 export default profileSlice.reducer;
