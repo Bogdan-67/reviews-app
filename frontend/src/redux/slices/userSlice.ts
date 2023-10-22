@@ -12,12 +12,9 @@ import RoleService from '../../services/RoleService';
 import { FetchError } from '../../types/FetchError';
 import { Status } from '../../models/Status.enum';
 
-type RemoveRoleUsersParams = {
+type ChangeRoleUsersParams = {
+  id_role: number;
   users: number[];
-};
-
-type GiveRoleUsersParams = RemoveRoleUsersParams & {
-  role: string;
 };
 
 export const fetchUsers = createAsyncThunk<AxiosResponse<IUser[]>>(
@@ -33,18 +30,18 @@ export const fetchUsers = createAsyncThunk<AxiosResponse<IUser[]>>(
       alert(error.response?.data?.message);
       return error.response?.data?.message;
     }
-  },
+  }
 );
 
 //Функция добавления роли у user
 export const giveRoleUsers = createAsyncThunk<
   AxiosResponse<IUser[]>,
-  GiveRoleUsersParams,
+  ChangeRoleUsersParams,
   { rejectValue: FetchError }
 >('users/giveRoleUsers', async (params, { rejectWithValue }) => {
   try {
-    const { role, users } = params;
-    const response = await RoleService.giveRoles(role, users);
+    const { id_role, users } = params;
+    const response = await RoleService.giveRoles(id_role, users);
     return response;
   } catch (error) {
     if (!error.response) {
@@ -56,12 +53,12 @@ export const giveRoleUsers = createAsyncThunk<
 //Функция удаления роли у user
 export const removeRoleUsers = createAsyncThunk<
   AxiosResponse<IUser[]>,
-  RemoveRoleUsersParams,
+  ChangeRoleUsersParams,
   { rejectValue: FetchError }
 >('users/removeRoleUsers', async (params, { rejectWithValue }) => {
   try {
-    const { users } = params;
-    const response = await RoleService.removeRoles(users);
+    const { id_role, users } = params;
+    const response = await RoleService.removeRoles(id_role, users);
     return response;
   } catch (error) {
     if (!error.response) {
@@ -192,7 +189,7 @@ export const userSlice = createSlice({
       const response = action.payload.data;
       const updUsers = state.users.map((user) => {
         const findUser = response.find(
-          (obj: IUser) => obj.id_user === user.id_user,
+          (obj: IUser) => obj.id_user === user.id_user
         );
         if (findUser) {
           return findUser;

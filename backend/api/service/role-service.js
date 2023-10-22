@@ -4,71 +4,58 @@ const ApiError = require('../exceptions/api-error');
 
 class RoleService {
   async getRoles(req, res) {
-    const roles = await db.query(`SELECT role_name FROM roles`);
-    const map = roles.rows.map((obj) => obj.role_name);
-    return map;
+    const roles = await db.query(`SELECT * FROM roles`);
+    return roles.rows;
   }
 
-  async giveRole(role, users) {
-    if (!role) {
-      throw ApiError.BadRequest('Не введена роль!');
+  async giveRole({ id_role, users }) {
+    if (!id_role) {
+      throw ApiError.BadRequest('Не выбрана роль!');
     }
     if (!Array.isArray(users)) {
       throw ApiError.BadRequest('users не является массивом!');
     }
     if (users.length === 0) {
-      throw ApiError.BadRequest('Не введено ни одного игрока!');
+      throw ApiError.BadRequest('Не выбрано ни одного пользователя!');
     }
-    const updUsers = [];
     const promises = users.map(async (user) => {
-      const roleId = await db.query(`SELECT id_role FROM roles WHERE role_name=$1`, [role]);
-      const updRole = await db.query(
-        `UPDATE accounts SET role_id=$1 WHERE id_account=$2 RETURNING *`,
-        [roleId.rows[0].id_role, user],
+      const account = await db.query(
+        `SELECT * FROM accounts WHERE user_id = $1`,
+        [user]
       );
-      const updUser = await db.query(`SELECT * FROM users WHERE id_user=$1`, [
-        updRole.rows[0].id_user,
-      ]);
-      const updAccount = await db.query(
-        `SELECT * FROM accounts LEFT JOIN roles ON accounts.role_id = roles.id_role WHERE id_account=$1`,
-        [updRole.rows[0].id_account],
+      await db.query(
+        `INSERT INTO user_roles(role_id, account_id) VALUES ($1, $2) RETURNING *`,
+        [id_role, account.rows[0].id_account]
       );
-      updUsers.push(new UserDTO({ ...updAccount.rows[0], ...updUser.rows[0] }));
     });
 
     await Promise.all(promises);
 
-    return updUsers;
+    return 'Роли успешно выданы';
   }
 
-  async removeRole(users) {
+  async removeRole({ id_role, users }) {
     if (!Array.isArray(users)) {
       throw ApiError.BadRequest('users не является массивом!');
     }
     if (users.length === 0) {
-      throw ApiError.BadRequest('Не введено ни одного игрока!');
+      throw ApiError.BadRequest('Не выбрано ни одного пользователя!');
     }
 
-    const updUsers = [];
     const promises = users.map(async (user) => {
-      const roleId = await db.query(`SELECT id_role FROM roles WHERE role_name=$1`, ['USER']);
-      const updRole = await db.query(
-        `UPDATE accounts SET role_id=$1 WHERE id_account=$2 RETURNING *`,
-        [roleId.rows[0].id_role, user],
+      const account = await db.query(
+        `SELECT * FROM accounts WHERE user_id = $1`,
+        [user]
       );
-      const updUser = await db.query(`SELECT * FROM users WHERE id_user=$1`, [
-        updRole.rows[0].id_user,
-      ]);
-      const updAccount = await db.query(
-        `SELECT * FROM accounts LEFT JOIN roles ON accounts.role_id = roles.id_role WHERE id_account=$1`,
-        [updRole.rows[0].id_account],
+      await db.query(
+        `DELETE FROM user_roles WHERE role_id = $1 AND account_id = $2`,
+        [id_role, account.rows[0].id_account]
       );
-      updUsers.push(new UserDTO({ ...updAccount.rows[0], ...updUser.rows[0] }));
     });
 
     await Promise.all(promises);
 
-    return updUsers;
+    return 'Роли успешно отозваны';
   }
 }
 

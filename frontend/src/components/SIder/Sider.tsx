@@ -34,8 +34,10 @@ const Sider: FC = () => {
           Профиль
         </Link>
         <Link
-          to="/request"
-          style={window.location.pathname === '/request' ? activeLinkStyle : {}}
+          to="/requests"
+          style={
+            window.location.pathname === '/requests' ? activeLinkStyle : {}
+          }
         >
           Запросы
         </Link>

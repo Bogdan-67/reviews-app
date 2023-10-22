@@ -6,5 +6,6 @@ router.post('/request', requestsController.createRequest);
 router.post('/udp-status-req', requestsController.updStatusReq);
 router.get('/requests/:author', requestsController.getRequest);
 router.get('/request-types', requestsController.getRequestTypes);
+router.get('/requests-all', requestsController.getRequests);
 
 module.exports = router;
