@@ -2,6 +2,7 @@ const db = require('../db');
 const ApiError = require('../exceptions/api-error');
 
 class FeedbackService {
+  // id_author - число, id_interns - массив, poll_id -число, request_id - число, text -стринг
   async createFeedback({ id_author, id_interns, poll_id, request_id, text }) {
     await db.query('BEGIN');
 
@@ -39,7 +40,7 @@ class FeedbackService {
 
     await db.query('COMMIT');
 
-    return 'Фидбек успешно сформирован';
+    return 'Респонденты успешно назначены';
   }
 
   async addFeedbackDate({ feedback_date, id_feedback }) {
