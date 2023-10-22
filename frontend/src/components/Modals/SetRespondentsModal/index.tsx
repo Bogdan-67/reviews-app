@@ -49,6 +49,8 @@ const SetRespondentsModal = ({ id_request, author_id, poll_id }: Props) => {
         onCancel={handleCancel}
       >
         <SetRespondentsForm
+          title={false}
+          showOkBtn={false}
           id_request={id_request}
           author_id={author_id}
           poll_id={poll_id}
