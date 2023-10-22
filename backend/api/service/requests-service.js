@@ -16,7 +16,7 @@ class RequestService {
       ]);
       const newRequest = await db.query(
         `INSERT INTO requests(author_id, intern_id, type_request_id, status_request_id) VALUES ($1, $2, $3, 2) RETURNING *`,
-        [author.rows[0].id_user, intern.rows[0].id_user, type_request_id],
+        [author.rows[0].id_user, intern.rows[0].id_user, type_request_id]
       );
       response.push(intern.rows[0].firstname);
     }
@@ -30,7 +30,7 @@ class RequestService {
 
     const request = await db.query(
       `SELECT * FROM requests WHERE author_id = $1`,
-      [author_id],
+      [author_id]
     );
 
     const requestRows = request.rows;
@@ -56,9 +56,24 @@ class RequestService {
   //Работа с типами запросов (О стажерах, о сотрудниках)
   async getTypes() {
     const types = await db.query(
-      `SELECT id_type_request,name FROM type_requests`,
+      `SELECT id_type_request,name FROM type_requests`
     );
     return types.rows;
+  }
+
+  async getRequests({ user_id, type_request_id }) {
+    const requests = await db.query(
+      `
+    SELECT * 
+    FROM requests r
+    LEFT JOIN status_request sr ON r.status_request_id=sr.id_status_request
+    LEFT JOIN users athr ON r.author = athr.id_user
+    LEFT JOIN relations rl ON r.intern_id = rl.intern_id
+    WHERE rl.curator_id = $1 AND r.type_request_id = $2`,
+      [user_id, type_request_id]
+    );
+
+    return requests.rows;
   }
 }
 
