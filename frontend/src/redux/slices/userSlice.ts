@@ -23,22 +23,22 @@ type GiveRoleUsersParams = RemoveRoleUsersParams & {
   role: string;
 };
 
-export const fetchUsers = createAsyncThunk<
-  AxiosResponse<IUser[]>,
-  { rejectValue: string }
->('request/fetchRequestStatus', async (rejectWithValue) => {
-  try {
-    const response = await UserService.getUsers();
-    console.log('Users: ', response.data);
-    return response;
-  } catch (error) {
-    if (!error.response) {
-      throw error;
+export const fetchUsers = createAsyncThunk<AxiosResponse<IUser[]>>(
+  'request/fetchRequestStatus',
+  async () => {
+    try {
+      const response = await UserService.getUsers();
+      console.log('Users: ', response.data);
+      return response;
+    } catch (error) {
+      if (!error.response) {
+        throw error;
+      }
+      alert(error.response?.data?.message);
+      return error.response?.data?.message;
     }
-    alert(error.response?.data?.message);
-    return error.response?.data?.message;
-  }
-});
+  },
+);
 
 //Функция добавления роли у user
 export const giveRoleUsers = createAsyncThunk<
@@ -117,7 +117,8 @@ export const userSlice = createSlice({
       state.isLoading = false;
       state.status = Status.SUCCESS;
       state.error = initialState.error;
-      state.users = action.params.users;
+      state.users = action.payload.data;
+      console.log('PaloadDataUser', action.payload.data);
     },
     [fetchUsers.pending.type]: (state, action) => {
       state.isLoading = true;
