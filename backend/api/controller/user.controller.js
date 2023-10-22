@@ -32,6 +32,15 @@ class UserController {
       next(e);
     }
   }
+  async getUserOnRules(req, res, next) {
+    try {
+      const users = await userService.getUserOnRules(req.body);
+      res.status(200).json(users);
+    } catch (e) {
+      await db.query('ROLLBACK');
+      next(e);
+    }
+  }
 }
 
 module.exports = new UserController();
