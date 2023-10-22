@@ -23,6 +23,15 @@ class UserController {
       next(e);
     }
   }
+  async addRelations(req, res, next) {
+    try {
+      const newRelations = await userService.addRelations(req.body);
+      res.status(200).json(newRelations);
+    } catch (e) {
+      await db.query('ROLLBACK');
+      next(e);
+    }
+  }
 }
 
 module.exports = new UserController();
