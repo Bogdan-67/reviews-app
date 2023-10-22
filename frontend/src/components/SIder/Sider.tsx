@@ -1,16 +1,16 @@
 import { FC, useState, useEffect } from 'react';
 import { Link, Route, Routes } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
   SelectProfile,
   SelectUser,
   logoutAccount,
-} from '../redux/slices/profileSlice';
+} from '../../redux/slices/profileSlice';
 import styles from './Sider.module.scss';
 import { Button, Flex } from 'antd';
-import { Status } from '../models/Status.enum';
-import { FiLogOut } from '../../node_modules/react-icons/fi';
-import Profile from '../pages/Profile';
+import { Status } from '../../models/Status.enum';
+import { FiLogOut } from 'react-icons/fi';
+import Profile from '../../pages/Profile';
 
 const Sider: FC = () => {
   const { firstname, lastname, middlename } = useAppSelector(SelectUser);
