@@ -1,4 +1,5 @@
 const db = require('../db');
+const RequestDTO = require('../dtos/request-dto');
 const ApiError = require('../exceptions/api-error');
 
 class RequestService {
@@ -15,7 +16,7 @@ class RequestService {
         intern_id,
       ]);
       const newRequest = await db.query(
-        `INSERT INTO requests(author_id, intern_id, type_request_id, status_request_id) VALUES ($1, $2, $3, 2) RETURNING *`,
+        `INSERT INTO requests(author_id, intern_id, type_request_id, status_request_id) VALUES ($1, $2, $3, 5) RETURNING *`,
         [author.rows[0].id_user, intern.rows[0].id_user, type_request_id]
       );
       response.push(intern.rows[0].firstname);
@@ -29,7 +30,28 @@ class RequestService {
     await db.query('BEGIN');
 
     const request = await db.query(
-      `SELECT * FROM requests WHERE author_id = $1`,
+      `SELECT 
+      id_request,
+      created_at,
+      updated_at,
+      intern_id,
+      type_request_id,
+      status_request_id,
+      sr.name,
+      athr.firstname as authorFirstname,
+      athr.lastname as authorLastname,
+      athr.middlename as authorMiddlename,
+      intern.firstname as internFirstname,
+      intern.lastname as internLastname,
+      intern.middlename as internMiddlename,
+      author_id,
+      curator_id
+      FROM requests r 
+      LEFT JOIN status_request sr ON r.status_request_id=sr.id_status_request
+      LEFT JOIN users athr ON r.author_id = athr.id_user
+      LEFT JOIN users intern ON r.intern_id = intern.id_user
+      LEFT JOIN relations rl ON r.intern_id = rl.user_id 
+      WHERE author_id = $1 OR curator_id = $1`,
       [author_id]
     );
 
@@ -47,10 +69,14 @@ class RequestService {
         type_request_id: row.type_request_id,
       };
 
-      requestObjects.push(requestObject);
+      console.log(row);
+
+      const requestDto = new RequestDTO(row);
+
+      requestObjects.push(requestDto);
     }
     await db.query('COMMIT');
-    return { requests: requestObjects };
+    return requestObjects;
   }
 
   //Работа с типами запросов (О стажерах, о сотрудниках)

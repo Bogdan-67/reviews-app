@@ -6,6 +6,7 @@ import { Status } from '../../models/Status.enum';
 import RequestService from '../../services/RequestService';
 import { IRequest } from '../../models/IRequest';
 import { RequestType } from '../../types/RequestTypes';
+import { message } from 'antd';
 
 export type Error = {
   message: string;
@@ -34,7 +35,7 @@ export const createRequest = createAsyncThunk<
     const response = await RequestService.createRequest(
       id_internsJSON,
       author,
-      type_request,
+      type_request
     );
     return response;
   } catch (error) {
@@ -123,8 +124,10 @@ const requestsSlice = createSlice({
     builder.addCase(fetchRequests.pending, (state) => {
       state.status = Status.LOADING;
       state.error = null;
+      message.loading('Загрузка');
     });
     builder.addCase(fetchRequests.fulfilled, (state, action) => {
+      message.destroy();
       state.status = Status.SUCCESS;
       state.requests = action.payload.data;
       state.error = null;
@@ -132,6 +135,7 @@ const requestsSlice = createSlice({
     builder.addCase(fetchRequests.rejected, (state, action) => {
       state.error = action.payload ? action.payload : 'Произошла ошибка';
       state.status = Status.ERROR;
+      message.error(action.payload ? action.payload : 'Произошла ошибка');
     });
 
     // // Кейсы для запроса данных о пользователе

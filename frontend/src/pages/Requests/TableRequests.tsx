@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Flex, Space, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import CreatePollModal from '../../components/Modals/CreatePollModal';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { SelectRequests, fetchRequests } from '../../redux/slices/requstSlice';
+import useSelection from 'antd/es/table/hooks/useSelection';
+import { IRequest } from '../../models/IRequest';
+import SetRespondentsModal from '../../components/Modals/SetRespondentsModal';
 
 interface DataType {
   key: string;
@@ -12,17 +17,24 @@ interface DataType {
   id_request: number;
 }
 
-const columns: ColumnsType<DataType> = [
+const columns: ColumnsType<Partial<IRequest>> = [
   {
     title: 'Стажер',
-    dataIndex: 'name',
-    key: 'name',
+    dataIndex: 'intern',
+    key: 'intern',
     render: (text) => <a>{text}</a>,
   },
   {
-    title: 'Дата',
-    dataIndex: 'age',
-    key: 'age',
+    title: 'Дата создания',
+    dataIndex: 'created_at',
+    key: 'created_at',
+    render: (date) => <div>{new Date(date).toLocaleDateString('ru-RU')}</div>,
+  },
+  {
+    title: 'Дата обновления',
+    dataIndex: 'updated_at',
+    key: 'updated_at',
+    render: (date) => <div>{new Date(date).toLocaleDateString('ru-RU')}</div>,
   },
   {
     title: 'Автор',
@@ -31,16 +43,16 @@ const columns: ColumnsType<DataType> = [
   },
   {
     title: 'Статус',
-    key: 'tags',
-    dataIndex: 'tags',
-    render: (_, { tag }) => {
-      let color = tag.length < 8 ? 'yellow' : 'green';
-      if (tag === 'Отменена') {
+    key: 'status',
+    dataIndex: 'status',
+    render: (status, record) => {
+      let color = record.status_id === 4 ? 'green' : 'yellow';
+      if (record.status_id === 3) {
         color = 'volcano';
       }
       return (
-        <Tag color={color} key={tag}>
-          {tag.toUpperCase()}
+        <Tag color={color} key={status}>
+          {status.toUpperCase()}
         </Tag>
       );
     },
@@ -50,50 +62,43 @@ const columns: ColumnsType<DataType> = [
     key: 'action',
     render: (_, record) => (
       <Space size="middle">
-        {record.tag === 'Ожидает' && (
+        {record.status_id === 5 && (
           <CreatePollModal id_request={record.id_request} />
         )}
-        {record.tag === 'Ожидает' && <a>Назначить респондентов</a>}
+        {record.status_id === 2 && (
+          <SetRespondentsModal
+            id_request={record.id_request}
+            author_id={record.author_id}
+            poll_id={record.poll_id ? record.poll_id : null}
+          />
+        )}
       </Space>
     ),
-  },
-];
-
-const data: DataType[] = [
-  {
-    key: '1',
-    id_request: 1,
-    name: 'Иван Малявкин',
-    age: '21.10.2023',
-    author: 'Иван Петров',
-    tag: 'Ожидает',
-  },
-  {
-    key: '2',
-    id_request: 2,
-    name: 'Кирилл Кухта',
-    age: '16.10.2023',
-    author: 'Максим Иванов',
-    tag: 'Отменена',
-  },
-  {
-    key: '3',
-    id_request: 3,
-    name: 'Данила Орлов',
-    age: '01.10.2023',
-    author: 'Иван Петров',
-    tag: 'Выполнена',
   },
 ];
 
 type Props = {};
 
 const TableRequests = (props: Props) => {
+  const dispatch = useAppDispatch();
+  const requests = useAppSelector(SelectRequests);
+
+  useEffect(() => {
+    console.log(requests);
+  }, [requests]);
+
+  useEffect(() => {
+    dispatch(fetchRequests({ author: 6 }));
+  }, []);
   return (
     <>
       <Flex vertical align="center">
         <h1>Запросы на обратную связь</h1>
-        <Table style={{ width: '100%' }} columns={columns} dataSource={data} />
+        <Table
+          style={{ width: '100%' }}
+          columns={columns}
+          dataSource={requests}
+        />
       </Flex>
     </>
   );
