@@ -1,13 +1,24 @@
-.layout {
-  padding-bottom: 30px;
-}
 .header {
   height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 30px;
+}
+.layoutContent {
+  padding-bottom: 30px;
+  display: flex;
+  & .layoutContent2 {
+    display: flex;
+  }
 }
 .sider {
-  border-radius: 0px 20px 20px 0px;
+  border-radius: 0px 0px 10px 0px;
+  margin-right: 60px;
+}
+
+.content {
+  display: flex;
+  margin-top: 60px;
+  // width: 50%;
+  text-align: center;
 }
