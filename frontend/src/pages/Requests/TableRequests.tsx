@@ -134,7 +134,7 @@ const TableRequests = (props: Props) => {
 
   useEffect(() => {
     if (id_user) {
-      dispatch(fetchRequests({ author: id_user }));
+      dispatch(fetchRequests({ id_user }));
     }
   }, [id_user]);
   return (
