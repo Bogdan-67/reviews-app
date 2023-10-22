@@ -61,11 +61,11 @@ function App() {
           }
         >
           <Route path="" element={<Profile />}></Route>
-          <Route path="requests" element={<></>}>
+          <Route path="requests">
             <Route path="" element={<TableRequests />}></Route>
             <Route path="create" element={<CreateRequest />}></Route>
           </Route>
-          <Route path="poll" element={<></>}>
+          <Route path="poll">
             <Route path="create" element={<CreatePoll />}></Route>
             <Route path="complete/:id" element={<CompletePoll />}></Route>
           </Route>
