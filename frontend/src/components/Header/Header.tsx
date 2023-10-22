@@ -28,7 +28,9 @@ const Header: FC = () => {
   return (
     <>
       <header className={styles.out}>
-        <div className={styles.name}>{fullName}</div>
+        <Link to="/">
+          <div className={styles.name}>{fullName}</div>
+        </Link>
         <button
           className={styles.buttonOut}
           onClick={() => dispatch(logoutAccount())}
