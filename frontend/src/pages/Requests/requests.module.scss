@@ -1,7 +1,15 @@
- .form{
-   padding: 30px;
- }
-.inputs{
+.requests {
+  align-items: flex-start;
+  font-size: 40px;
+}
+
+.TableReq {
+  padding-top: 10px;
+}
+.form {
+  padding: 30px;
+}
+.inputs {
   margin: 20px 0;
   display: flex;
   flex-direction: column;

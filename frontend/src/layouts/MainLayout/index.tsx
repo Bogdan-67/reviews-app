@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import HeaderComponent from '../../components/Header/Header';
-import SiderComponent from '../../components/Sider/Sider';
+import SiderComponent from '../../components/SIder/Sider';
 import { Outlet } from 'react-router';
 import { Layout } from 'antd';
 import styles from './Layout.module.scss';
@@ -15,9 +15,9 @@ const MainLayout: FC = () => {
       </Header>
       <Layout hasSider className={styles.layoutContent}>
         <div className={styles.layoutContent2}>
-          <Sider className={styles.sider}>
+          <div className={styles.sider}>
             <SiderComponent />
-          </Sider>
+          </div>
           <Content className={styles.content}>
             <Outlet />
           </Content>
