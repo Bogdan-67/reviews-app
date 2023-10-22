@@ -16,7 +16,7 @@ class RequestService {
       ]);
       const newRequest = await db.query(
         `INSERT INTO requests(author_id, intern_id, type_request_id, status_request_id) VALUES ($1, $2, $3, 2) RETURNING *`,
-        [author.rows[0].id_user, intern.rows[0].id_user, type_request_id],
+        [author.rows[0].id_user, intern.rows[0].id_user, type_request_id]
       );
       response.push(intern.rows[0].firstname);
     }
@@ -30,7 +30,7 @@ class RequestService {
 
     const request = await db.query(
       `SELECT * FROM requests WHERE author_id = $1`,
-      [author_id],
+      [author_id]
     );
 
     const requestRows = request.rows;
@@ -45,6 +45,7 @@ class RequestService {
         author_id: row.author_id,
         status_request_id: row.status_request_id,
         type_request_id: row.type_request_id,
+        poll_id: row.poll_id,
       };
 
       requestObjects.push(requestObject);
@@ -56,7 +57,7 @@ class RequestService {
   //Работа с типами запросов (О стажерах, о сотрудниках)
   async getTypes() {
     const types = await db.query(
-      `SELECT id_type_request,name FROM type_requests`,
+      `SELECT id_type_request,name FROM type_requests`
     );
     return types.rows;
   }
