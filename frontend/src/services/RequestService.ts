@@ -1,6 +1,7 @@
 import { AxiosResponse } from 'axios';
 import $api from '../http';
 import { IRequest } from '../models/IRequest';
+import { RequestType } from '../types/RequestTypes';
 
 export default class RequestService {
   static fetchRequests(author: number): Promise<AxiosResponse<IRequest[]>> {
@@ -30,5 +31,8 @@ export default class RequestService {
       id_request,
       id_status_request,
     });
+  }
+  static fetchRequestTypes(): Promise<AxiosResponse<RequestType[]>> {
+    return $api.get('/request-types');
   }
 }

@@ -5,6 +5,7 @@ import { AxiosResponse } from 'axios';
 import { Status } from '../../models/Status.enum';
 import RequestService from '../../services/RequestService';
 import { IRequest } from '../../models/IRequest';
+import { RequestType } from '../../types/RequestTypes';
 
 export type Error = {
   message: string;
@@ -22,7 +23,6 @@ type FetchOneRequestParams = {
   id_request: number;
 };
 
-// Функция регистрации
 export const createRequest = createAsyncThunk<
   AxiosResponse<string>,
   RequestParams,
