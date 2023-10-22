@@ -3,7 +3,6 @@ import React from 'react';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { SelectProfile, logoutAccount } from '../redux/slices/profileSlice';
 import { Status } from '../models/Status.enum';
-import CreatePollForm from '../components/Forms/CreatePoll';
 
 type Props = {};
 
@@ -20,7 +19,6 @@ const Profile = (props: Props) => {
       >
         Выйти
       </Button>
-      <CreatePollForm />
     </div>
   );
 };

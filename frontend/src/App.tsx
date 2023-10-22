@@ -5,11 +5,7 @@ import Login from './pages/Login';
 import Registr from './pages/Registr';
 import React, { useEffect, useState } from 'react';
 import { RootState } from './redux/store';
-import {
-  SelectProfile,
-  SelectUserRole,
-  checkAuth,
-} from './redux/slices/profileSlice';
+import { SelectProfile, checkAuth } from './redux/slices/profileSlice';
 import { useSelector } from 'react-redux';
 import NotFound from './pages/NotFound/NotFound';
 
