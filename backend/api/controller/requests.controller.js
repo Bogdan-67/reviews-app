@@ -23,6 +23,16 @@ class RequestController {
       next(e);
     }
   }
+
+  async getRequests(req, res, next) {
+    try {
+      const requests = await requestService.getRequests(req.query);
+      res.status(200).json(requests);
+    } catch (e) {
+      await db.query('ROLLBACK');
+      next(e);
+    }
+  }
   async getRequestTypes(req, res, next) {
     try {
       const types = await requestService.getTypes();
