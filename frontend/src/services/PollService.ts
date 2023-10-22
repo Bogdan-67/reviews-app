@@ -3,6 +3,7 @@ import $api from '../http';
 import { IRequest } from '../models/IRequest';
 import { IQuestionType } from '../models/IQuestionType';
 import { IFeedback } from '../models/IFeedback';
+import { IPoll } from '../models/IPoll';
 
 export default class PollService {
   static fetchQuestionTypes(): Promise<AxiosResponse<IQuestionType[]>> {
@@ -13,5 +14,9 @@ export default class PollService {
     id_request: number
   ): Promise<AxiosResponse<string>> {
     return $api.post<string>(`/create-poll`, { data, id_request });
+  }
+
+  static getPoll(id: number): Promise<AxiosResponse<IPoll>> {
+    return $api.get<IPoll>(`/get-poll/${id}`);
   }
 }

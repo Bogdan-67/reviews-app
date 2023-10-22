@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import HeaderComponent from '../../components/Header/Header';
-import SiderComponent from '../../components/SIder/Sider';
+import SiderComponent from '../../components/Sider/Sider';
 import { Outlet } from 'react-router';
 import { Layout } from 'antd';
 import styles from './Layout.module.scss';

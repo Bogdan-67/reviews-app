@@ -46,18 +46,21 @@ function App() {
     },
   });
 
-  const openNotification = () => {
+  const openNotification = (poll_id: number) => {
     api.open({
-      message: 'Вам доступны новые опросы',
+      message: 'Вам доступен новый опрос',
       key: 'polls',
       description: ``,
       btn: (
-        <Button type="primary" onClick={() => navigate('/poll')}>
-          Перейти к опросам
+        <Button
+          type="primary"
+          onClick={() => navigate('/poll/complete/' + poll_id)}
+        >
+          Перейти к опросу
         </Button>
       ),
       onClick: () => {
-        navigate('/poll');
+        navigate('/poll/complete/' + poll_id);
         notification.destroy('polls');
       },
       duration: 5,
@@ -67,7 +70,7 @@ function App() {
   const checkPolls = async () => {
     await FeedbackService.enabledFeedbacks(id_user).then((response) => {
       if (response.data && response.data.length > 0) {
-        openNotification();
+        response.data.map((feedback) => openNotification(feedback.poll_id));
       }
     });
   };
