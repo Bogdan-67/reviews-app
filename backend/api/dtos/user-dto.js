@@ -1,5 +1,6 @@
 module.exports = class UserDTO {
   id_user;
+  id_account;
   firstname;
   lastname;
   middlename;
@@ -10,6 +11,7 @@ module.exports = class UserDTO {
 
   constructor(model) {
     this.id_user = model.id_user;
+    this.id_account = model.id_account;
     this.firstname = model.firstname;
     this.lastname = model.lastname;
     this.middlename = model.middlename;

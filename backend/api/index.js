@@ -8,6 +8,9 @@ const path = require('path');
 const authRouter = require('./routes/auth.routes');
 const roleRouter = require('./routes/role.routes');
 const errorMiddleware = require('./middlewares/error-middleware');
+const requestRouter = require('./routes/requests.routes');
+const pollsRouter = require('./routes/polls.routes');
+const userRouter = require('./routes/user.routes');
 
 const PORT = process.env.PORT || 5000;
 
@@ -16,7 +19,7 @@ app.use(
   cors({
     credentials: true,
     origin: [process.env.CLIENT_URL, 'http://localhost'],
-  }),
+  })
 );
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -26,6 +29,9 @@ app.use(cookieParser());
 
 app.use('/', authRouter);
 app.use('/', roleRouter);
+app.use('/', requestRouter);
+app.use('/', pollsRouter);
+app.use('/', userRouter);
 app.use(errorMiddleware);
 
 const start = async () => {

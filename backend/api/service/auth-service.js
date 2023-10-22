@@ -10,15 +10,16 @@ const sharp = require("sharp");
 
 class AuthService {
   async createUser({
-    name,
-    surname,
-    patronimyc,
-    phone,
+    firstname,
+    lastname,
+    middlename,
     email,
-    login,
+    phone,
     password,
-    team,
   }) {
+    // Начало транзакции
+    await db.query("BEGIN");
+
     const checkPhone = await db.query(`SELECT * FROM users WHERE phone = $1`, [
       phone,
     ]);
@@ -27,6 +28,7 @@ class AuthService {
         "Пользователь с таким номером телефона уже зарегистрирован!",
       );
     }
+
     const checkEmail = await db.query(`SELECT * FROM users WHERE email = $1`, [
       email,
     ]);
@@ -35,30 +37,38 @@ class AuthService {
         "Пользователь с такой почтой уже зарегистрирован!",
       );
     }
+
     const checkLogin = await db.query(
       `SELECT * FROM accounts WHERE login = $1`,
-      [login],
+      [email],
     );
     if (checkLogin.rows[0]) {
       throw ApiError.BadRequest(
         "Пользователь с таким логином уже зарегистрирован!",
       );
     }
+
     const newUser = await db.query(
-      `INSERT INTO users(name, surname, patronimyc, phone, email, team) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [name, surname, patronimyc, phone, email, team],
+      `INSERT INTO users(firstname, lastname, middlename, phone, email) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [firstname, lastname, middlename, phone, email],
     );
+
     const hashPassword = await bcrypt.hash(password, 3);
     const newAccount = await db.query(
-      `INSERT INTO accounts(login, password, id_user) VALUES ($1, $2, $3) RETURNING *`,
-      [login, hashPassword, newUser.rows[0].id_user],
+      `INSERT INTO accounts(login, password, user_id) VALUES ($1, $2, $3) RETURNING *`,
+      [email, hashPassword, newUser.rows[0].id_user],
     );
-    const role = await db.query(`SELECT * FROM roles WHERE id_role = $1`, [
-      newAccount.rows[0].role_id,
-    ]);
+
+    const newUserRole = await db.query(
+      `INSERT INTO user_roles(account_id, role_id)
+        VALUES ($1, 1)
+        RETURNING *`,
+      [newAccount.rows[0].id_account],
+    );
+
     const userDto = new UserDTO({
       ...newAccount.rows[0],
-      ...role.rows[0],
+      ...newUserRole.rows[0].roles,
       ...newUser.rows[0],
     });
     const tokens = tokenService.generateTokens({ ...userDto });
@@ -66,6 +76,7 @@ class AuthService {
       newAccount.rows[0].id_account,
       tokens.refreshToken,
     );
+    await db.query("COMMIT");
     return { user: { ...userDto }, ...tokens };
   }
 
@@ -89,10 +100,10 @@ class AuthService {
     // );
     const roles = await db.query(
       `SELECT roles.role_name
-    FROM account
-    INNER JOIN user_roles ON account.id_account = user_roles.account_id
+    FROM accounts
+    INNER JOIN user_roles ON accounts.id_account = user_roles.account_id
     INNER JOIN roles ON user_roles.role_id = roles.id_role
-    WHERE account.id_account = $1`,
+    WHERE accounts.id_account = $1`,
       [account.rows[0].id_account],
     );
     // const roles = await db.query(`SELECT * from roles where id_role = $1 `, [
@@ -100,13 +111,16 @@ class AuthService {
     // ]);
     console.log("roles:", roles);
     const user = await db.query("SELECT * FROM users WHERE id_user = $1", [
-      account.rows[0].id_user,
+      account.rows[0].user_id,
     ]);
 
-    const userDto = new UserDTO({ ...roles.rows[0], ...user.rows[0] });
-    console.log("userDto: ", userDto);
+    const userDto = new UserDTO({
+      ...roles.rows[0],
+      ...user.rows[0],
+      ...account.rows[0],
+    });
     const tokens = tokenService.generateTokens({ ...userDto });
-    await tokenService.saveToken(userDto.id_user, tokens.refreshToken);
+    await tokenService.saveToken(userDto.id_account, tokens.refreshToken);
     return { ...tokens, user: { ...userDto } };
   }
 
