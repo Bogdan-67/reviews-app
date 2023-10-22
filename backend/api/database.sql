@@ -94,7 +94,7 @@ CREATE TABLE requests(
     FOREIGN KEY (status_request_id) REFERENCES status_request(id_status_request) ON DELETE CASCADE,
     type_request_id INTEGER NOT NULL,
     FOREIGN KEY (type_request_id) REFERENCES type_requests(id_type_request) ON DELETE CASCADE,
-    poll_id INTEGER NOT NULL,
+    poll_id INTEGER,
     FOREIGN KEY (poll_id) REFERENCES polls(id_poll) ON DELETE CASCADE
 
 );
