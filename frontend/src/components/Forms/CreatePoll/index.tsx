@@ -27,6 +27,7 @@ const CreatePollForm = (props: Props) => {
     handleSubmit,
     getValues,
     setValue,
+    reset,
     control,
     formState: { errors },
   } = useForm<Partial<IPoll>>({
@@ -138,6 +139,7 @@ const CreatePollForm = (props: Props) => {
     await PollService.createPoll(JSON.stringify(data))
       .then((response) => {
         message.success(response.data);
+        reset();
       })
       .catch((e) =>
         message.error(
