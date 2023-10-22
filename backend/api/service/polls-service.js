@@ -22,7 +22,7 @@ class PollsService {
     return questionTypesObjects;
   }
 
-  async createPoll({ data }) {
+  async createPoll({ data }, id_request) {
     await db.query('BEGIN');
 
     const parsedData = JSON.parse(data);
@@ -31,6 +31,13 @@ class PollsService {
       `INSERT INTO polls(name, comment) VALUES ($1, $2) RETURNING *`,
       [parsedData.name, parsedData.comment]
     );
+
+    if (id_request) {
+      const updRequsets = await db.query(
+        `UPDATE requests SET poll_id = $1 WHERE id_request = $2 RETURNING *;`,
+        [newPoll.rows[0].poll_id, id_request]
+      );
+    }
 
     const promises = [];
     for (const question of parsedData.questions) {

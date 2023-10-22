@@ -23,56 +23,6 @@ class AnswerService {
         );
       }
     }
-
-    // const parsedData = JSON.parse(answers1);
-
-    // for (const id_intern of parsedData) {
-    //   const intern = await db.query(`SELECT * FROM users WHERE id_user = $1`, [
-    //     id_intern,
-    //   ]);
-
-    //   const newFeedback = await db.query(
-    //     `INSERT INTO feedback(author_id, respondent_id, poll_id, request_id, feedback_text, status_request_id) VALUES ($1, $2, $3, $4, $5, 1) RETURNING *`,
-    //     [
-    //       author.rows[0].id_user,
-    //       intern.rows[0].id_user,
-    //       poll.rows[0].id_poll,
-    //       request.rows[0].id_request,
-    //       text,
-    //     ]
-    //   );
-    // }
-
-    // const author = await db.query(`SELECT * FROM users WHERE id_user = $1`, [
-    //   id_author,
-    // ]);
-
-    // const poll = await db.query(`SELECT * FROM polls WHERE id_poll = $1`, [
-    //   poll_id,
-    // ]);
-
-    // const request = await db.query(
-    //   `SELECT * FROM requests WHERE id_request = $1`,
-    //   [request_id]
-    // );
-
-    // for (const id_intern of parsedData) {
-    //   const intern = await db.query(`SELECT * FROM users WHERE id_user = $1`, [
-    //     id_intern,
-    //   ]);
-
-    //   const newFeedback = await db.query(
-    //     `INSERT INTO feedback(author_id, respondent_id, poll_id, request_id, feedback_text, status_request_id) VALUES ($1, $2, $3, $4, $5, 1) RETURNING *`,
-    //     [
-    //       author.rows[0].id_user,
-    //       intern.rows[0].id_user,
-    //       poll.rows[0].id_poll,
-    //       request.rows[0].id_request,
-    //       text,
-    //     ]
-    //   );
-    // }
-
     await db.query('COMMIT');
 
     return 'Фидбек успешно сформирован';
