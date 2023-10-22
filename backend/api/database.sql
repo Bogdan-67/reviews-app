@@ -142,7 +142,7 @@ CREATE TABLE feedback(
     FOREIGN KEY (author_id) REFERENCES users(id_user) ON DELETE CASCADE,
     status_request_id INTEGER NOT NULL,
     FOREIGN KEY (status_request_id) REFERENCES status_request(id_status_request) ON DELETE CASCADE,
-    request_id INTEGER NOT NULL,
+    request_id INTEGER,
     FOREIGN KEY (request_id) REFERENCES requests(id_request) ON DELETE CASCADE,
     poll_id INTEGER NOT NULL,
     FOREIGN KEY (poll_id) REFERENCES polls(id_poll) ON DELETE CASCADE
