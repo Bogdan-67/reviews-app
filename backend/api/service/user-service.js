@@ -15,7 +15,7 @@ class UserService {
       INNER JOIN accounts ON user_roles.account_id = accounts.id_account
       WHERE accounts.user_id = $1;
       `,
-        [userRow.id_user],
+        [userRow.id_user]
       );
 
       const userRolesObjects = [];
@@ -24,7 +24,7 @@ class UserService {
         const roleName = await db.query(
           `SELECT role_name FROM roles WHERE id_role = $1;
         `,
-          [roleRow.role_id],
+          [roleRow.role_id]
         );
         userRolesObjects.push({
           role_id: roleRow.role_id,
@@ -39,7 +39,7 @@ class UserService {
       INNER JOIN user_teams ON teams.id_team = user_teams.team_id
       WHERE user_teams.user_id = $1;
       `,
-        [userRow.id_user],
+        [userRow.id_user]
       );
 
       const userTeamsArray = userTeams.rows.map((row) => row.team_name);
@@ -81,6 +81,24 @@ class UserService {
         user.rows[0].middlename,
       ].join(' '),
     };
+  }
+
+  async addRelations({ curator_id, intern_id }) {
+    await db.query('BEGIN');
+
+    const curator = await db.query(`SELECT * FROM users WHERE id_user = $1`, [
+      curator_id,
+    ]);
+    const intern = await db.query(`SELECT * FROM users WHERE id_user = $1`, [
+      intern_id,
+    ]);
+
+    const addRelations = await db.query(
+      `INSERT INTO relations(curator_id, user_id) VALUES ($1, $2) RETURNING *`,
+      [curator.rows[0].id_user, intern.rows[0].id_user]
+    );
+    await db.query('COMMIT');
+    return 'Связь успешно добавлена';
   }
 }
 
