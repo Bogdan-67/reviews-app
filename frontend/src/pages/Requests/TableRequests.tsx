@@ -7,6 +7,7 @@ import { SelectRequests, fetchRequests } from '../../redux/slices/requstSlice';
 import useSelection from 'antd/es/table/hooks/useSelection';
 import { IRequest } from '../../models/IRequest';
 import SetRespondentsModal from '../../components/Modals/SetRespondentsModal';
+import { SelectUser } from '../../redux/slices/profileSlice';
 
 interface DataType {
   key: string;
@@ -82,14 +83,18 @@ type Props = {};
 const TableRequests = (props: Props) => {
   const dispatch = useAppDispatch();
   const requests = useAppSelector(SelectRequests);
+  const { id_user } = useAppSelector(SelectUser);
 
   useEffect(() => {
     console.log(requests);
   }, [requests]);
 
   useEffect(() => {
-    dispatch(fetchRequests({ author: 6 }));
-  }, []);
+    console.log('id_user', id_user);
+    if (id_user) {
+      dispatch(fetchRequests({ author: id_user }));
+    }
+  }, [id_user]);
   return (
     <>
       <Flex vertical align="center">

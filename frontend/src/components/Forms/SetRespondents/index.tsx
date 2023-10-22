@@ -85,7 +85,7 @@ const SetRespondentsForm = forwardRef(
       setIsLoading(true);
       console.log(data);
       await FeedbackService.createFeedback({
-        id_request,
+        request_id: id_request,
         id_author,
         id_interns: JSON.stringify(data.users),
         poll_id,

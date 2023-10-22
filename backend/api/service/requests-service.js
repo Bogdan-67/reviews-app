@@ -27,12 +27,16 @@ class RequestService {
   }
 
   async getRequest(author_id) {
+    console.log('getRequest');
     await db.query('BEGIN');
+
+    console.log(author_id);
 
     const request = await db.query(
       `SELECT 
       id_request,
       created_at,
+      poll_id,
       updated_at,
       intern_id,
       type_request_id,
@@ -89,6 +93,7 @@ class RequestService {
   }
 
   async getRequests({ user_id, type_request_id }) {
+    console.log('getRequests');
     if (!user_id && !type_request_id) {
       const requests = await db.query(
         `

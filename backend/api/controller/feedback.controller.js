@@ -22,6 +22,16 @@ class FeedbackController {
       next(e);
     }
   }
+
+  async enabledFeedbacks(req, res, next) {
+    try {
+      const feedbacks = await feedbackService.enabledFeedbacks(req.params);
+      res.status(200).json(feedbacks);
+    } catch (e) {
+      await db.query('ROLLBACK');
+      next(e);
+    }
+  }
 }
 
 module.exports = new FeedbackController();

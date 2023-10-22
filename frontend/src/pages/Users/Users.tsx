@@ -47,7 +47,7 @@ const UsersInfo: FC = () => {
           render={(roles: Role[]) => (
             <>
               {roles?.map((role) => (
-                <Tag color="blue" key={role.id_role}>
+                <Tag color="blue" key={role.role_id}>
                   {role.role_name}
                 </Tag>
               ))}

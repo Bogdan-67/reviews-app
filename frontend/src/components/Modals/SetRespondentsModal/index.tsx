@@ -55,6 +55,8 @@ const SetRespondentsModal = ({ id_request, author_id, poll_id }: Props) => {
           id_request={id_request}
           id_author={author_id}
           poll_id={poll_id}
+          onSuccess={handleSuccess}
+          onError={handleError}
         />
       </Modal>
     </>

@@ -3,8 +3,16 @@ const ApiError = require('../exceptions/api-error');
 
 class FeedbackService {
   // id_author - число, id_interns - массив, poll_id -число, request_id - число, text -стринг
-  async createFeedback({ id_author, id_interns, poll_id, request_id, text }) {
+  async createFeedback({
+    id_author,
+    id_interns,
+    poll_id,
+    request_id = null,
+    text,
+  }) {
     await db.query('BEGIN');
+    console.log('poll_id', poll_id);
+    console.log('id_request', request_id);
 
     const parsedData = JSON.parse(id_interns);
 
@@ -21,6 +29,8 @@ class FeedbackService {
       [request_id]
     );
 
+    console.log(poll.rows[0]);
+
     for (const id_intern of parsedData) {
       const intern = await db.query(`SELECT * FROM users WHERE id_user = $1`, [
         id_intern,
@@ -32,7 +42,9 @@ class FeedbackService {
           author.rows[0].id_user,
           intern.rows[0].id_user,
           poll.rows[0].id_poll,
-          request.rows[0].id_request,
+          request.rows[0] && request.rows[0].id_request
+            ? request.rows[0].id_request
+            : null,
           text,
         ]
       );
@@ -55,6 +67,15 @@ class FeedbackService {
     await db.query('COMMIT');
 
     return 'Дата успешно обновлена';
+  }
+
+  async enabledFeedbacks({ id_user }) {
+    const feedbacks = await db.query(
+      `SELECT * FROM feedback WHERE respondent_id = $1 AND status_request_id = 1`,
+      [id_user]
+    );
+
+    return feedbacks.rows;
   }
 }
 
