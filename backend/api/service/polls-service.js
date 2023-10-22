@@ -22,7 +22,7 @@ class PollsService {
     return questionTypesObjects;
   }
 
-  async createPoll(data) {
+  async createPoll({ data }) {
     await db.query('BEGIN');
 
     const parsedData = JSON.parse(data);
@@ -42,12 +42,13 @@ class PollsService {
           question.question_type_id,
         ]
       );
-
-      for (const option of question.options) {
-        const newQuestionOptions = await db.query(
-          `INSERT INTO question_options(question_id, text) VALUES ($1, $2) RETURNING *`,
-          [newPollQuestions.rows[0].id_question, option.text]
-        );
+      if (question.question_type_id != 3) {
+        for (const option of question.options) {
+          const newQuestionOptions = await db.query(
+            `INSERT INTO question_options(question_id, text) VALUES ($1, $2) RETURNING *`,
+            [newPollQuestions.rows[0].id_question, option.text]
+          );
+        }
       }
     }
 
