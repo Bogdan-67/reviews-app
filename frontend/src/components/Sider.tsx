@@ -4,7 +4,6 @@ import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import {
   SelectProfile,
   SelectUser,
-  SelectUserRole,
   logoutAccount,
 } from '../redux/slices/profileSlice';
 import styles from './Sider.module.scss';
@@ -15,7 +14,6 @@ import Profile from '../pages/Profile';
 
 const Sider: FC = () => {
   const { firstname, lastname, middlename } = useAppSelector(SelectUser);
-  const role = useAppSelector(SelectUserRole);
   const { status } = useAppSelector(SelectProfile);
 
   const dispatch = useAppDispatch();
