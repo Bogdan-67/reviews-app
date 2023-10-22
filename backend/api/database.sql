@@ -76,6 +76,12 @@ CREATE TABLE type_requests(
     name VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE polls(
+    id_poll SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    comment VARCHAR(255) NOT NULL
+);
+
 CREATE TABLE requests(
     id_request SERIAL PRIMARY KEY,
     created_at DATE NOT NULL DEFAULT current_date,
@@ -87,15 +93,13 @@ CREATE TABLE requests(
     status_request_id INTEGER NOT NULL,
     FOREIGN KEY (status_request_id) REFERENCES status_request(id_status_request) ON DELETE CASCADE,
     type_request_id INTEGER NOT NULL,
-    FOREIGN KEY (type_request_id) REFERENCES type_requests(id_type_request) ON DELETE CASCADE
+    FOREIGN KEY (type_request_id) REFERENCES type_requests(id_type_request) ON DELETE CASCADE,
+    poll_id INTEGER NOT NULL,
+    FOREIGN KEY (poll_id) REFERENCES polls(id_poll) ON DELETE CASCADE
 
 );
 
-CREATE TABLE polls(
-    id_poll SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    comment VARCHAR(255) NOT NULL
-);
+
 
 CREATE TABLE question_types(
     id_question_type SERIAL PRIMARY KEY,
@@ -122,7 +126,9 @@ CREATE TABLE selected_options(
     id_selected_options SERIAL PRIMARY KEY,
     text VARCHAR(255) NOT NULL,
     option_id INTEGER NOT NULL,
-    FOREIGN KEY (option_id) REFERENCES question_options(id_option) ON DELETE CASCADE
+    FOREIGN KEY (option_id) REFERENCES question_options(id_option) ON DELETE CASCADE,
+    question_id INTEGER NOT NULL,
+    FOREIGN KEY (question_id) REFERENCES poll_questions(id_question) ON DELETE CASCADE
 );
 
 
