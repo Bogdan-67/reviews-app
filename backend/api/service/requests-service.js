@@ -115,7 +115,8 @@ class RequestService {
 
       return requests.rows;
     }
-    
+  }
+
   async updStatusReq({ id_status_request, id_request }) {
     await db.query('BEGIN');
     const status_request = await db.query(
