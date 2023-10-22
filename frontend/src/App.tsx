@@ -1,9 +1,8 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import './scss/app.scss';
-import Header from './components/Header/Header';
 import Login from './pages/Login';
 import Registr from './pages/Registr';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { RootState } from './redux/store';
 import { SelectProfile, checkAuth } from './redux/slices/profileSlice';
 import { useSelector } from 'react-redux';
@@ -16,8 +15,7 @@ import TableRequests from './pages/Requests/TableRequests';
 import CreateRequest from './pages/Requests/CreateRequest';
 import CreatePoll from './pages/Poll/CreatePoll';
 import CompletePoll from './pages/Poll/CompletePoll';
-import { message } from 'antd';
-import { Status } from './models/Status.enum';
+import UsersInfo from './pages/Users/Users';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -69,6 +67,11 @@ function App() {
             <Route path="create" element={<CreatePoll />}></Route>
             <Route path="complete/:id" element={<CompletePoll />}></Route>
           </Route>
+          <Route path="users">
+            <Route path="" element={<UsersInfo />}></Route>
+            <Route path="user/:id" element={<CompletePoll />}></Route>
+          </Route>
+          <Route path="staff" element={<UsersInfo />}></Route>
           <Route path="*" element={<NotFound />}></Route>
         </Route>
       </Routes>

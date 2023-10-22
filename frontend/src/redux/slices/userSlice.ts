@@ -11,9 +11,6 @@ import UserService from '../../services/UserService';
 import RoleService from '../../services/RoleService';
 import { FetchError } from '../../types/FetchError';
 import { Status } from '../../models/Status.enum';
-import { IRequest } from '../../models/IRequest';
-import RequestService from '../../services/RequestService';
-// import { UsersFetch } from '../../pages/Players';
 
 type RemoveRoleUsersParams = {
   users: number[];
@@ -28,7 +25,6 @@ export const fetchUsers = createAsyncThunk<AxiosResponse<IUser[]>>(
   async () => {
     try {
       const response = await UserService.getUsers();
-      console.log('Users: ', response.data);
       return response;
     } catch (error) {
       if (!error.response) {
@@ -120,7 +116,7 @@ export const userSlice = createSlice({
       state.users = action.payload.data;
       console.log('PaloadDataUser', action.payload.data);
     },
-    [fetchUsers.pending.type]: (state, action) => {
+    [fetchUsers.pending.type]: (state) => {
       state.isLoading = true;
       state.status = Status.LOADING;
     },
