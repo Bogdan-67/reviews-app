@@ -1,22 +1,25 @@
 import React, { useEffect } from 'react';
-import { Flex, Space, Table, Tag } from 'antd';
+import {
+  Badge,
+  Dropdown,
+  Flex,
+  Space,
+  Table,
+  TableColumnsType,
+  Tag,
+} from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import CreatePollModal from '../../components/Modals/CreatePollModal';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { SelectRequests, fetchRequests } from '../../redux/slices/requstSlice';
-import useSelection from 'antd/es/table/hooks/useSelection';
 import { IRequest } from '../../models/IRequest';
 import SetRespondentsModal from '../../components/Modals/SetRespondentsModal';
 import styles from './requests.module.scss';
 
-interface DataType {
-  key: string;
-  name: string;
-  age: string;
-  author: string;
-  tag: string;
-  id_request: number;
-}
+const items = [
+  { key: '1', label: 'Action 1' },
+  { key: '2', label: 'Action 2' },
+];
 
 const columns: ColumnsType<Partial<IRequest>> = [
   {
@@ -80,17 +83,59 @@ const columns: ColumnsType<Partial<IRequest>> = [
 
 type Props = {};
 
+class ExpandedDataType {}
+
+function DownOutlined() {
+  return null;
+}
+
+const expandedRowRender = () => {
+  const columns: TableColumnsType<ExpandedDataType> = [
+    { title: 'ФИО сотрудника', dataIndex: 'fio', key: 'date' },
+    { title: 'Дата обновления', dataIndex: 'upgrade', key: 'upgrade' },
+    {
+      title: 'Статус',
+      key: 'status',
+      render: () => <Badge status="success" text="Finished" />,
+    },
+    {
+      title: 'Action',
+      dataIndex: 'operation',
+      key: 'operation',
+      render: () => (
+        <Space size="middle">
+          <Link to={`/profile`}>Профиль</Link>
+          <Dropdown menu={{ items }}>
+            <a>
+              More <DownOutlined />
+            </a>
+          </Dropdown>
+        </Space>
+      ),
+    },
+  ];
+
+  const data = [];
+  // const dispatch = useAppDispatch();
+
+  // const request = useAppSelector(SelectRequests);
+
+  return <Table columns={columns} dataSource={data} pagination={false} />;
+};
 const TableRequests = (props: Props) => {
   const dispatch = useAppDispatch();
   const requests = useAppSelector(SelectRequests);
-
+  const profile = useAppSelector((state) => state.profile.user);
+  const id_user = profile.id_user;
   useEffect(() => {
-    console.log(requests);
+    console.log('requests', requests);
   }, [requests]);
 
   useEffect(() => {
-    dispatch(fetchRequests({ author: 6 }));
-  }, []);
+    if (id_user) {
+      dispatch(fetchRequests({ id_user }));
+    }
+  }, [id_user]);
   return (
     <>
       <Flex vertical align="flex-start">
@@ -98,6 +143,7 @@ const TableRequests = (props: Props) => {
         <div className={styles.TableReq}></div>
         <Table
           style={{ width: '100%' }}
+          expandable={{ expandedRowRender }}
           columns={columns}
           dataSource={requests}
         />

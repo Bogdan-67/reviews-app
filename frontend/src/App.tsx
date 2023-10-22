@@ -1,10 +1,20 @@
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 import './scss/app.scss';
 import Login from './pages/Login';
 import Registr from './pages/Registr';
 import React, { useEffect } from 'react';
 import { RootState } from './redux/store';
-import { SelectProfile, checkAuth } from './redux/slices/profileSlice';
+import {
+  SelectProfile,
+  SelectUser,
+  checkAuth,
+} from './redux/slices/profileSlice';
 import { useSelector } from 'react-redux';
 import NotFound from './pages/NotFound/NotFound';
 
@@ -18,12 +28,55 @@ import CompletePoll from './pages/Poll/CompletePoll';
 import UsersInfo from './pages/Users/Users';
 import GiveRole from './pages/Roles/GiveRole';
 import AddInterns from './pages/Interns/AddInterns';
+import FeedbackService from './services/FeedbackService';
+import { Button, notification } from 'antd';
+import UserPolls from './pages/Poll/UserPolls';
 
 function App() {
   const dispatch = useAppDispatch();
   const isAuth = useSelector((state: RootState) => state.profile.isAuth);
   const location = useLocation();
   const { error, status } = useAppSelector(SelectProfile);
+  const { id_user } = useAppSelector(SelectUser);
+  const navigate = useNavigate();
+
+  const [api, contextHolder] = notification.useNotification({
+    stack: {
+      threshold: 3,
+    },
+  });
+
+  const openNotification = () => {
+    api.open({
+      message: 'Вам доступны новые опросы',
+      key: 'polls',
+      description: ``,
+      btn: (
+        <Button type="primary" onClick={() => navigate('/poll')}>
+          Перейти к опросам
+        </Button>
+      ),
+      onClick: () => {
+        navigate('/poll');
+        notification.destroy('polls');
+      },
+      duration: 5,
+    });
+  };
+
+  const checkPolls = async () => {
+    await FeedbackService.enabledFeedbacks(id_user).then((response) => {
+      if (response.data && response.data.length > 0) {
+        openNotification();
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (id_user) {
+      checkPolls();
+    }
+  }, [id_user]);
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
@@ -35,6 +88,7 @@ function App() {
 
   return (
     <>
+      {contextHolder}
       <Routes location={location} key={location.pathname}>
         <Route
           path="/login"
@@ -66,6 +120,7 @@ function App() {
             <Route path="create" element={<CreateRequest />}></Route>
           </Route>
           <Route path="poll">
+            <Route path="" element={<UserPolls />}></Route>
             <Route path="create" element={<CreatePoll />}></Route>
             <Route path="complete/:id" element={<CompletePoll />}></Route>
           </Route>

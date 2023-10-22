@@ -13,6 +13,17 @@ class PollsController {
     }
   }
 
+  async getPoll(req, res, next) {
+    try {
+      const id_poll = req.params.id_poll;
+      const poll = await pollsService.getPoll(id_poll);
+      res.status(200).json(poll);
+    } catch (e) {
+      await db.query('ROLLBACK');
+      next(e);
+    }
+  }
+
   async createPoll(req, res, next) {
     try {
       const poll = await pollsService.createPoll(req.body);

@@ -61,9 +61,19 @@ const AddInterns = () => {
     console.log(`selected ${value}`);
     setSelectUser(value);
   };
+  console.log(infoUsers);
+  console.log(
+    'users',
+    infoUsers.filter((user) => user.roles.find((role) => role.role_id === 2))
+  );
   return (
     <>
-      <Table pagination={false} dataSource={infoUsers}>
+      <Table
+        pagination={false}
+        dataSource={infoUsers.filter(
+          (user) => !!user.roles.find((role) => role.role_id === 2)
+        )}
+      >
         <ColumnGroup title="ФИО">
           <Column
             sorter={true}
@@ -95,14 +105,14 @@ const AddInterns = () => {
           render={(roles: Role[]) => (
             <>
               {roles?.map((role) => (
-                <Tag color="blue" key={role.id_role}>
+                <Tag color="blue" key={role.role_id}>
                   {role.role_name}
                 </Tag>
               ))}
             </>
           )}
         />
-        {/*<Column*/}
+        {/* <Column */}
         {/*  title="Команды"*/}
         {/*  dataIndex="tags"*/}
         {/*  key="tags"*/}
@@ -125,7 +135,7 @@ const AddInterns = () => {
         {/*      <a>Delete</a>*/}
         {/*    </Space>*/}
         {/*  )}*/}
-        {/*/>*/}
+        {/*/> */}
         <Column
           title="Действия"
           key="action"

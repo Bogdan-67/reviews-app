@@ -63,7 +63,7 @@ class AuthService {
       `INSERT INTO user_roles(account_id, role_id)
         VALUES ($1, 1)
         RETURNING (
-          SELECT ARRAY_AGG(filename) as roles FROM user_roles LEFT JOIN roles ON roles.id_role=user_roles.role_id WHERE account_id = $1
+          SELECT ARRAY_AGG(role_name) as roles FROM user_roles LEFT JOIN roles ON roles.id_role=user_roles.role_id WHERE account_id = $1
         )`,
       [newAccount.rows[0].id_account]
     );

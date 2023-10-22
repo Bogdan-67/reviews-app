@@ -2,6 +2,29 @@ const db = require('../db');
 const ApiError = require('../exceptions/api-error');
 
 class PollsService {
+  async getPoll(id_poll) {
+    await db.query('BEGIN');
+
+    const questionTypes = await db.query(
+      `SELECT * FROM polls WHERE id_poll = $1`,
+      [id_poll]
+    );
+
+    const pollsObjects = [];
+
+    for (const row of questionTypes.rows) {
+      const pollObject = {
+        id_poll: row.id_poll,
+        name: row.name,
+        comment: row.comment,
+      };
+
+      pollsObjects.push(pollObject);
+    }
+    await db.query('COMMIT');
+    return pollsObjects;
+  }
+
   async getQuestionTypes() {
     await db.query('BEGIN');
 
@@ -22,7 +45,7 @@ class PollsService {
     return questionTypesObjects;
   }
 
-  async createPoll({ data }, id_request) {
+  async createPoll({ data, id_request }) {
     await db.query('BEGIN');
 
     const parsedData = JSON.parse(data);
