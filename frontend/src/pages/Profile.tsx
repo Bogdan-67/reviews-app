@@ -13,13 +13,7 @@ const Profile = (props: Props) => {
 
   return (
     <div>
-      <Button
-        loading={status === Status.LOADING}
-        danger
-        onClick={() => dispatch(logoutAccount())}
-      >
-        Выйти
-      </Button>
+      <h1>Профиль</h1>
     </div>
   );
 };
