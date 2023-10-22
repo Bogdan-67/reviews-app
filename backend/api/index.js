@@ -13,6 +13,7 @@ const pollsRouter = require('./routes/polls.routes');
 const userRouter = require('./routes/user.routes');
 const teamsRouter = require('./routes/teams.routes');
 const feedbackRouter = require('./routes/feedback.routes');
+const answersRouter = require('./routes/answers.routes');
 
 const PORT = process.env.PORT || 5000;
 
@@ -36,6 +37,7 @@ app.use('/', pollsRouter);
 app.use('/', userRouter);
 app.use('/', teamsRouter);
 app.use('/', feedbackRouter);
+app.use('/', answersRouter);
 app.use(errorMiddleware);
 
 const start = async () => {
