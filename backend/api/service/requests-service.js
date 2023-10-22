@@ -56,6 +56,21 @@ class RequestService {
     await db.query('COMMIT');
     return { requests: requestObjects };
   }
+
+  async getRequests({ user_id, type_request_id }) {
+    const requests = await db.query(
+      `
+    SELECT * 
+    FROM requests r
+    LEFT JOIN status_request sr ON r.status_request_id=sr.id_status_request
+    LEFT JOIN users athr ON r.author = athr.id_user
+    LEFT JOIN relations rl ON r.intern_id = rl.intern_id
+    WHERE rl.curator_id = $1 AND r.type_request_id = $2`,
+      [user_id, type_request_id]
+    );
+
+    return requests.rows;
+  }
 }
 
 module.exports = new RequestService();
