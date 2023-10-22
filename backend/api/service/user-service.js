@@ -100,6 +100,45 @@ class UserService {
     await db.query('COMMIT');
     return 'Связь успешно добавлена';
   }
+
+  async getUserOnRules({ id_role }) {
+    await db.query('BEGIN');
+
+    const roles = await db.query(`SELECT * FROM roles WHERE id_role = $1`, [
+      id_role,
+    ]);
+
+    const user_roles = await db.query(
+      `SELECT * FROM user_roles WHERE role_id = $1`,
+      [roles.rows[0].id_role]
+    );
+
+    if (!user_roles.rows[0]) {
+      return 'Пользователи не найдены';
+    }
+
+    const accounts = await db.query(
+      `SELECT * FROM accounts WHERE id_account = $1`,
+      [user_roles.rows[0].account_id]
+    );
+
+    const users = await db.query(`SELECT * FROM users WHERE id_user = $1`, [
+      accounts.rows[0].user_id,
+    ]);
+
+    const usersObjects = [];
+
+    for (const userRow of users.rows) {
+      usersObjects.push({
+        user_id: userRow.id_user,
+        role_name:
+          userRow.firstname + ' ' + userRow.lastname + ' ' + userRow.middlename,
+      });
+    }
+
+    await db.query('COMMIT');
+    return usersObjects;
+  }
 }
 
 module.exports = new UserService();
