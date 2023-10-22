@@ -18,7 +18,7 @@ export type RequestParams = {
   type_request: number;
 };
 type FetchRequestsParams = {
-  author: number;
+  id_user: number;
 };
 type FetchOneRequestParams = {
   id_request: number;
@@ -35,7 +35,7 @@ export const createRequest = createAsyncThunk<
     const response = await RequestService.createRequest(
       id_internsJSON,
       author,
-      type_request
+      type_request,
     );
     return response;
   } catch (error) {
@@ -70,8 +70,8 @@ export const fetchRequests = createAsyncThunk<
   { rejectValue: string }
 >('request/fetchRequestStatus', async (params, { rejectWithValue }) => {
   try {
-    const { author } = params;
-    const response = await RequestService.fetchRequests(author);
+    const { id_user } = params;
+    const response = await RequestService.fetchRequests(id_user);
     return response;
   } catch (error) {
     if (!error.response) {

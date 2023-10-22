@@ -22,6 +22,16 @@ class FeedbackController {
       next(e);
     }
   }
+  async getRespondents(req, res, next) {
+    try {
+      const intern_id = req.params.intern_id;
+      const respondent = await feedbackService.getRespondents(intern_id);
+      res.status(200).json(respondent);
+    } catch (e) {
+      await db.query('ROLLBACK');
+      next(e);
+    }
+  }
 
   async enabledFeedbacks(req, res, next) {
     try {
