@@ -3,9 +3,9 @@ import $api from '../http';
 
 type CreateFeedbackBody = {
   id_author: number;
-  id_request: number;
+  id_request?: number;
   id_interns: string;
-  poll_id?: number;
+  poll_id: number;
   text?: string;
 };
 
