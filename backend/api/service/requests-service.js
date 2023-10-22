@@ -4,27 +4,23 @@ const ApiError = require('../exceptions/api-error');
 class RequestService {
   async createRequest({ author_id, interns_id, type_request_id }) {
     await db.query('BEGIN');
-
     const author = await db.query(`SELECT * FROM users WHERE id_user = $1`, [
       author_id,
     ]);
 
     const response = [];
     interns_id = JSON.parse(interns_id);
-
-    const promises = interns_id.map(async (intern_id) => {
+    for (const intern_id of interns_id) {
       const intern = await db.query(`SELECT * FROM users WHERE id_user = $1`, [
         intern_id,
       ]);
-
       const newRequest = await db.query(
         `INSERT INTO requests(author_id, intern_id, type_request_id, status_request_id) VALUES ($1, $2, $3, 2) RETURNING *`,
-        [author.rows[0].id_user, intern.rows[0].id_user, type_request_id]
+        [author.rows[0].id_user, intern.rows[0].id_user, type_request_id],
       );
       response.push(intern.rows[0].firstname);
-    });
+    }
 
-    await Promise.all(promises);
     await db.query('COMMIT');
     return response;
   }
@@ -34,7 +30,7 @@ class RequestService {
 
     const request = await db.query(
       `SELECT * FROM requests WHERE author_id = $1`,
-      [author_id]
+      [author_id],
     );
 
     const requestRows = request.rows;

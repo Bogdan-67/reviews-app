@@ -8,6 +8,8 @@ import { Button, message, Select, SelectProps, Space } from 'antd';
 import { createRequest } from '../../redux/slices/requstSlice';
 import styles from './requests.module.scss';
 import { Status } from '../../models/Status.enum';
+import { IUser } from '../../models/IUser';
+import { fetchUsers } from '../../redux/slices/userSlice';
 type Props = {};
 
 export interface RequstProps {
@@ -27,24 +29,39 @@ const CreateRequest = () => {
   const [isError, setIsError] = useState<string>(null);
   const dispatch = useAppDispatch();
   const { error, status } = useAppSelector(SelectProfile);
-  const [value, setValues] = useState([7]);
+  const [value, setValues] = useState([]);
+  const [options, setOptions] = useState<ItemProps[]>();
+  const infoUsers = useAppSelector((state) => state.usersReducer.users);
   // Относится к select
   interface ItemProps {
     label: string;
     value: number;
   }
-  const label = 'name1';
-  const infoUsers = [1, 2];
-  const options: ItemProps[] = [{ label, value: infoUsers[1] }];
-  console.log('value', value);
+
+  useEffect(() => {
+    const users = infoUsers.map((user) => ({
+      fio: `${user.lastname} ${user.firstname} ${
+        user.middlename ? user.middlename : ''
+      } `,
+      ...user,
+    }));
+    const options: ItemProps[] = users.map((user) => ({
+      label: user.fio,
+      value: user.id_user,
+    }));
+    setOptions(options);
+    console.log('options:::', options);
+  }, [infoUsers]);
+
+  //const options: ItemProps[] = (label, value: infoUsers }];
   useEffect(() => {
     console.log(error);
     if (error) {
       message.error(error);
     }
   }, [error]);
+  useEffect(() => {}, []);
   const author = useAppSelector((state) => state.profile.user.id_user);
-  console.log('Автор:', author);
   const submit: SubmitHandler<RequstProps> = async () => {
     setIsLoading(true);
     console.log('value ', value);
@@ -66,12 +83,15 @@ const CreateRequest = () => {
   };
   useEffect(() => {
     console.log('Страница создания запроса');
-    // users = useAppSelector(state => state.usersReducer.)
+    dispatch(fetchUsers());
   }, []);
   return (
     <>
       <form className={styles.form} onSubmit={handleSubmit(submit)}>
         <div className={styles.inputs}>
+          <label>
+            Выбирите стажеров, о которых хотите собрать обратную связь
+          </label>
           <Space direction="vertical" style={{ width: '100%' }}>
             <Select {...selectProps} />
             {/*<Select {...selectProps} disabled />*/}
