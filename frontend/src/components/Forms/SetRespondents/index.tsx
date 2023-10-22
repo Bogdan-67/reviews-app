@@ -97,7 +97,7 @@ const SetRespondentsForm = forwardRef(
 
     return (
       <form className={styles.form} onSubmit={handleSubmit(submit)}>
-        <h2>Назначение ролей</h2>
+        {title && <h2>Назначение ролей</h2>}
         <Controller
           name={`users`}
           control={control}

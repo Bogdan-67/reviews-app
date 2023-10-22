@@ -18,7 +18,7 @@ type ChangeRoleUsersParams = {
 };
 
 export const fetchUsers = createAsyncThunk<AxiosResponse<IUser[]>>(
-  'request/fetchRequestStatus',
+  'request/fetchUsers',
   async () => {
     try {
       const response = await UserService.getUsers();
