@@ -8,8 +8,8 @@ class RoleService {
     return roles.rows;
   }
 
-  async giveRole({ role_id, users }) {
-    if (!role_id) {
+  async giveRole({ id_role, users }) {
+    if (!id_role) {
       throw ApiError.BadRequest('Не выбрана роль!');
     }
     if (!Array.isArray(users)) {
@@ -25,7 +25,7 @@ class RoleService {
       );
       await db.query(
         `INSERT user_roles(role_id, account_id) VALUES ($1, $2) RETURNING *`,
-        [role_id, account.rows[0].id_account]
+        [id_role, account.rows[0].id_account]
       );
     });
 
@@ -34,7 +34,7 @@ class RoleService {
     return 'Роли успешно выданы';
   }
 
-  async removeRole({ role_id, users }) {
+  async removeRole({ id_role, users }) {
     if (!Array.isArray(users)) {
       throw ApiError.BadRequest('users не является массивом!');
     }
@@ -49,7 +49,7 @@ class RoleService {
       );
       await db.query(
         `DELETE FROM user_roles WHERE role_id = $1 AND account_id = $2`,
-        [role_id, account.rows[0].id_account]
+        [id_role, account.rows[0].id_account]
       );
     });
 
