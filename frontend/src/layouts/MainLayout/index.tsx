@@ -9,7 +9,7 @@ const { Header, Content, Sider } = Layout;
 
 const MainLayout: FC = () => {
   return (
-    <Layout>
+    <Layout className={styles.layout}>
       <Header className={styles.header}>
         <HeaderComponent />
       </Header>
