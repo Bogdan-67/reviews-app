@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import './scss/app.scss';
-import Header from './components/Header';
+import Header from './components/Header/Header';
 import Login from './pages/Login';
 import Registr from './pages/Registr';
 import React, { useEffect, useState } from 'react';
