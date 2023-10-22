@@ -12,7 +12,7 @@ const QuestionSchema = Yup.object().shape({
 });
 
 const CreatePollSchema = Yup.object().shape({
-  name: Yup.string().required('Поле "Название" обязательно к заполнению'),
+  name: Yup.string().required('Обязательное поле'),
   comment: Yup.string(),
 });
 export default CreatePollSchema;
