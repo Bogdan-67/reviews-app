@@ -1,6 +1,7 @@
 import React from 'react';
 import { Flex, Space, Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import CreatePollModal from '../../components/Modals/CreatePollModal';
 
 interface DataType {
   key: string;
@@ -8,6 +9,7 @@ interface DataType {
   age: string;
   author: string;
   tag: string;
+  id_request: number;
 }
 
 const columns: ColumnsType<DataType> = [
@@ -48,7 +50,9 @@ const columns: ColumnsType<DataType> = [
     key: 'action',
     render: (_, record) => (
       <Space size="middle">
-        {record.tag === 'Ожидает' && <a>Создать опрос</a>}
+        {record.tag === 'Ожидает' && (
+          <CreatePollModal id_request={record.id_request} />
+        )}
         {record.tag === 'Ожидает' && <a>Назначить респондентов</a>}
       </Space>
     ),
@@ -58,6 +62,7 @@ const columns: ColumnsType<DataType> = [
 const data: DataType[] = [
   {
     key: '1',
+    id_request: 1,
     name: 'Иван Малявкин',
     age: '21.10.2023',
     author: 'Иван Петров',
@@ -65,6 +70,7 @@ const data: DataType[] = [
   },
   {
     key: '2',
+    id_request: 2,
     name: 'Кирилл Кухта',
     age: '16.10.2023',
     author: 'Максим Иванов',
@@ -72,6 +78,7 @@ const data: DataType[] = [
   },
   {
     key: '3',
+    id_request: 3,
     name: 'Данила Орлов',
     age: '01.10.2023',
     author: 'Иван Петров',
