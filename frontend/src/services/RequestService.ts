@@ -11,14 +11,14 @@ export default class RequestService {
   }
 
   static createRequest(
-    id_interns: number[],
-    id_author: number,
-    type_request: number,
+    interns_id: string,
+    author_id: number,
+    type_request_id: number,
   ): Promise<AxiosResponse<string>> {
     return $api.post<string>('/request', {
-      id_interns,
-      id_author,
-      type_request,
+      interns_id,
+      author_id,
+      type_request_id,
     });
   }
 

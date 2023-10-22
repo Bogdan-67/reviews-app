@@ -30,8 +30,9 @@ export const createRequest = createAsyncThunk<
 >('request/requestStatus', async (params, { rejectWithValue }) => {
   try {
     const { author, id_interns, type_request } = params;
+    const id_internsJSON = JSON.stringify(id_interns);
     const response = await RequestService.createRequest(
-      id_interns,
+      id_internsJSON,
       author,
       type_request,
     );
