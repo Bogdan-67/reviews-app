@@ -11,6 +11,7 @@ import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import styles from './SetRespondents.module.scss';
 import SetRespondentsSchema from '../../../models/validation/SetRespondentsSchema';
+import FeedbackService from '../../../services/FeedbackService';
 
 type Props = {
   title?: boolean;
@@ -18,7 +19,7 @@ type Props = {
   onSuccess?: () => void;
   onError?: (error: string) => void;
   id_request?: number;
-  author_id: number;
+  id_author: number;
   poll_id: number;
 };
 
@@ -36,7 +37,7 @@ const SetRespondentsForm = forwardRef(
       onSuccess,
       onError,
       id_request,
-      author_id,
+      id_author,
       poll_id,
     }: Props,
     ref
@@ -44,8 +45,9 @@ const SetRespondentsForm = forwardRef(
     const {
       handleSubmit,
       control,
+      reset,
       formState: { errors },
-    } = useForm<Partial<{ id_role: number; users: number[] }>>({
+    } = useForm<Partial<{ users: number[] }>>({
       defaultValues: {},
       resolver: yupResolver(SetRespondentsSchema),
     });
@@ -78,21 +80,35 @@ const SetRespondentsForm = forwardRef(
     }));
 
     const submit: SubmitHandler<{
-      id_request: number;
       users: number[];
     }> = async (data) => {
       setIsLoading(true);
       console.log(data);
-      // await RoleService.setRespondents(data.id_role, data.users)
-      //   .then((response) => {
-      //     message.success('Роли успешно назначены');
-      //   })
-      //   .catch((e) =>
-      //     message.error(
-      //       e.response?.data?.message ? e.response.data.message : e.message
-      //     )
-      //   )
-      //   .finally(() => setIsLoading(false));
+      await FeedbackService.createFeedback({
+        id_request,
+        id_author,
+        id_interns: JSON.stringify(data.users),
+        poll_id,
+      })
+        .then((response) => {
+          message.success(response.data);
+          reset();
+          if (onSuccess) {
+            onSuccess();
+          }
+        })
+        .catch((e) => {
+          if (onError) {
+            onError(
+              e.response.data.message ? e.response.data.message : e.message
+            );
+          } else {
+            message.error(
+              e.response.data.message ? e.response.data.message : e.message
+            );
+          }
+        })
+        .finally(() => setIsLoading(false));
     };
 
     return (
