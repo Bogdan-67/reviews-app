@@ -1,4 +1,9 @@
-import { PayloadAction, createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import {
+  PayloadAction,
+  createAsyncThunk,
+  createSelector,
+  createSlice,
+} from '@reduxjs/toolkit';
 import { IUser } from '../../models/IUser';
 import { AxiosResponse } from 'axios';
 import { RootState } from '../store';
@@ -6,6 +11,8 @@ import UserService from '../../services/UserService';
 import RoleService from '../../services/RoleService';
 import { FetchError } from '../../types/FetchError';
 import { Status } from '../../models/Status.enum';
+import { IRequest } from '../../models/IRequest';
+import RequestService from '../../services/RequestService';
 // import { UsersFetch } from '../../pages/Players';
 
 type RemoveRoleUsersParams = {
@@ -15,6 +22,23 @@ type RemoveRoleUsersParams = {
 type GiveRoleUsersParams = RemoveRoleUsersParams & {
   role: string;
 };
+
+export const fetchUsers = createAsyncThunk<
+  AxiosResponse<IUser[]>,
+  { rejectValue: string }
+>('request/fetchRequestStatus', async (rejectWithValue) => {
+  try {
+    const response = await UserService.getUsers();
+    console.log('Users: ', response.data);
+    return response;
+  } catch (error) {
+    if (!error.response) {
+      throw error;
+    }
+    alert(error.response?.data?.message);
+    return error.response?.data?.message;
+  }
+});
 
 //Функция добавления роли у user
 export const giveRoleUsers = createAsyncThunk<
@@ -66,6 +90,7 @@ const initialState: User = {
   count: 0,
   error: null,
 };
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -88,6 +113,52 @@ export const userSlice = createSlice({
     },
   },
   extraReducers: {
+    [fetchUsers.fulfilled.type]: (state, action) => {
+      state.isLoading = false;
+      state.status = Status.SUCCESS;
+      state.error = initialState.error;
+      state.users = action.params.users;
+    },
+    [fetchUsers.pending.type]: (state, action) => {
+      state.isLoading = true;
+      state.status = Status.LOADING;
+    },
+    [fetchUsers.rejected.type]: (state, action) => {
+      state.isLoading = false;
+      state.status = Status.ERROR;
+      state.error = action.payload.message;
+      alert(action.payload.message);
+    },
+
+    [giveRoleUsers.fulfilled.type]: (state, action) => {
+      state.isLoading = false;
+      state.status = Status.SUCCESS;
+      state.error = initialState.error;
+      const response = action.payload.data;
+      console.log('Тут выдают роль', response);
+
+      const updUsers = state.users.map((user) => {
+        console.log('Выдалась роль user', response);
+
+        const findUser = response.find((obj) => obj.id_user === user.id_user);
+        if (findUser) {
+          return findUser;
+        } else return user;
+      });
+      state.users = updUsers;
+    },
+    [giveRoleUsers.pending.type]: (state, action) => {
+      state.isLoading = true;
+      state.status = Status.LOADING;
+      state.error = initialState.error;
+    },
+    [giveRoleUsers.rejected.type]: (state, action) => {
+      state.isLoading = false;
+      state.status = Status.ERROR;
+      state.error = action.payload.message;
+      alert(action.payload.message);
+    },
+
     [giveRoleUsers.fulfilled.type]: (state, action) => {
       state.isLoading = false;
       state.status = Status.SUCCESS;
@@ -123,7 +194,9 @@ export const userSlice = createSlice({
       state.error = initialState.error;
       const response = action.payload.data;
       const updUsers = state.users.map((user) => {
-        const findUser = response.find((obj: IUser) => obj.id_user === user.id_user);
+        const findUser = response.find(
+          (obj: IUser) => obj.id_user === user.id_user,
+        );
         if (findUser) {
           return findUser;
         } else return user;
