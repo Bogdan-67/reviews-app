@@ -3,11 +3,32 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { fetchUsers } from '../../redux/slices/userSlice';
 import { IUser, Role } from '../../models/IUser';
 import { Button, Modal, Select, Space, Table, Tag } from 'antd';
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { AxiosResponse } from 'axios/index';
+import UserService from '../../services/UserService';
+import $api from '../../http';
 const { Column, ColumnGroup } = Table;
 
 const AddInterns = () => {
-  const [selectUser, setSelectUser] = useState();
+  const [selectUser, setSelectUser] = useState(); //curator
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const addCurator = async (curator_id, intern_id) => {
+    try {
+      console.log('requests: ', curator_id, ' ', intern_id);
+      const response = await $api.post('/relations-add', {
+        curator_id,
+        intern_id,
+      });
+      return response;
+    } catch (error) {
+      if (!error.response) {
+        throw error;
+      }
+      alert(error.response?.data?.message);
+      return error.response?.data?.message;
+    }
+  };
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -15,13 +36,13 @@ const AddInterns = () => {
   const handleAddResponddent = (user: IUser) => {
     console.log(user);
 
-    setSelectedUser(user);
+    setSelectedUser(user); //intern
     showModal(); // Откройте модальное окно
   };
 
   const handleOk = () => {
     //todo добавить функцию добавления куратора стажеру (массив из стажеров для куратора)
-
+    addCurator(selectUser, selectedUser.id_user);
     setIsModalOpen(false);
   };
 
@@ -29,7 +50,7 @@ const AddInterns = () => {
     setIsModalOpen(false);
   };
   const dispatch = useAppDispatch();
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null); //intern
 
   const infoUsers = useAppSelector((state) => state.usersReducer.users);
   useEffect(() => {
