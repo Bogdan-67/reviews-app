@@ -122,14 +122,14 @@ CREATE TABLE question_options(
     FOREIGN KEY (question_id) REFERENCES poll_questions(id_question) ON DELETE CASCADE
 );
 
-CREATE TABLE selected_options(
-    id_selected_options SERIAL PRIMARY KEY,
-    text VARCHAR(255) NOT NULL,
-    option_id INTEGER NOT NULL,
-    FOREIGN KEY (option_id) REFERENCES question_options(id_option) ON DELETE CASCADE,
-    question_id INTEGER NOT NULL,
-    FOREIGN KEY (question_id) REFERENCES poll_questions(id_question) ON DELETE CASCADE
-);
+-- CREATE TABLE selected_options(
+--     id_selected_options SERIAL PRIMARY KEY,
+--     text VARCHAR(255) NOT NULL,
+--     option_id INTEGER NOT NULL,
+--     FOREIGN KEY (option_id) REFERENCES question_options(id_option) ON DELETE CASCADE,
+--     question_id INTEGER NOT NULL,
+--     FOREIGN KEY (question_id) REFERENCES poll_questions(id_question) ON DELETE CASCADE
+-- );
 
 
 CREATE TABLE feedback(
@@ -151,10 +151,13 @@ CREATE TABLE feedback(
 
 CREATE TABLE queston_answers(
     id_answer SERIAL PRIMARY KEY,
-    selected_options_id INTEGER NOT NULL,
-    FOREIGN KEY (selected_options_id) REFERENCES selected_options(id_selected_options) ON DELETE CASCADE,
     feedback_id INTEGER NOT NULL,
-    FOREIGN KEY (feedback_id) REFERENCES feedback(id_feedback) ON DELETE CASCADE
+    FOREIGN KEY (feedback_id) REFERENCES feedback(id_feedback) ON DELETE CASCADE,
+    text VARCHAR(255),
+    option_id INTEGER,
+    FOREIGN KEY (option_id) REFERENCES question_options(id_option) ON DELETE CASCADE,
+    question_id INTEGER NOT NULL,
+    FOREIGN KEY (question_id) REFERENCES poll_questions(id_question) ON DELETE CASCADE
 );
 
 
