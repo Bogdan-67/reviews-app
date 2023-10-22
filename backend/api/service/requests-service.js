@@ -61,6 +61,21 @@ class RequestService {
     );
     return types.rows;
   }
+
+  async updStatusReq({ id_status_request, id_request }) {
+    await db.query('BEGIN');
+    const status_request = await db.query(
+      `SELECT * FROM status_request WHERE id_status_request = $1`,
+      [id_status_request]
+    );
+
+    const updStatusReq = await db.query(
+      `UPDATE requests SET status_request_id = $1 WHERE id_request = $2 RETURNING *;`,
+      [status_request.rows[0].id_status_request, id_request]
+    );
+    await db.query('COMMIT');
+    return 'Статус успешно обновлен';
+  }
 }
 
 module.exports = new RequestService();
