@@ -31,6 +31,8 @@ const CreatePollForm = (props: Props) => {
     formState: { errors },
   } = useForm<Partial<IPoll>>({
     defaultValues: {
+      name: '',
+      comment: '',
       questions: [],
     },
     resolver: yupResolver(CreatePollSchema),
