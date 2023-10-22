@@ -52,6 +52,14 @@ class RequestService {
     await db.query('COMMIT');
     return { requests: requestObjects };
   }
+
+  //Работа с типами запросов (О стажерах, о сотрудниках)
+  async getTypes() {
+    const types = await db.query(
+      `SELECT id_type_request,name FROM type_requests`,
+    );
+    return types.rows;
+  }
 }
 
 module.exports = new RequestService();

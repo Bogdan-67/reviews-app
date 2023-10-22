@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import RequestSchema from '../../models/validation/RequestSchema';
@@ -8,15 +8,29 @@ import { Button, message, Select, SelectProps, Space } from 'antd';
 import { createRequest } from '../../redux/slices/requstSlice';
 import styles from './requests.module.scss';
 import { Status } from '../../models/Status.enum';
-import { IUser } from '../../models/IUser';
 import { fetchUsers } from '../../redux/slices/userSlice';
-type Props = {};
+import RequestService from '../../services/RequestService';
+import { RequestType } from '../../types/RequestTypes';
 
 export interface RequstProps {
   value: number[];
 }
 
 const CreateRequest = () => {
+  const getRequestTypes = async () => {
+    try {
+      // Вызываем ваш метод fetchRequestTypes() для получения данных
+      const response = await RequestService.fetchRequestTypes();
+
+      // Возвращаем только нужные поля (id_type_request и name) из данных
+      return response.data;
+    } catch (error) {
+      // Обрабатываем ошибку, если запрос не удался
+      console.error('Ошибка при получении типов: ', error);
+      throw error;
+    }
+  };
+
   const {
     handleSubmit,
     control,
@@ -29,9 +43,11 @@ const CreateRequest = () => {
   const [isError, setIsError] = useState<string>(null);
   const dispatch = useAppDispatch();
   const { error, status } = useAppSelector(SelectProfile);
-  const [value, setValues] = useState([]);
+  const [value, setValue] = useState([]);
   const [options, setOptions] = useState<ItemProps[]>();
+  const [select, setSelect] = useState(null);
   const infoUsers = useAppSelector((state) => state.usersReducer.users);
+
   // Относится к select
   interface ItemProps {
     label: string;
@@ -50,24 +66,37 @@ const CreateRequest = () => {
       value: user.id_user,
     }));
     setOptions(options);
-    console.log('options:::', options);
   }, [infoUsers]);
 
-  //const options: ItemProps[] = (label, value: infoUsers }];
   useEffect(() => {
     console.log(error);
     if (error) {
       message.error(error);
     }
   }, [error]);
-  useEffect(() => {}, []);
   const author = useAppSelector((state) => state.profile.user.id_user);
   const submit: SubmitHandler<RequstProps> = async () => {
     setIsLoading(true);
     console.log('value ', value);
-    const type_request = 1; //fixme Исправить на тот, который должен быть назначен (Стажеры или Сотрудники)
+    const type_request = selectType;
     dispatch(createRequest({ author, id_interns: value, type_request }));
   };
+  const [requestTypes, setRequestTypes] = useState<RequestType[]>([]);
+  const [requestTypesStatus, setRequestTypesStatus] = useState(null);
+  const [selectType, setSelectType] = useState();
+
+  const fetchRequestTypes = async () => {
+    try {
+      setRequestTypesStatus(Status.LOADING);
+      const response = await RequestService.fetchRequestTypes();
+      setRequestTypes(response.data);
+      setRequestTypesStatus(Status.SUCCESS);
+      console.log(response.data);
+    } catch (e) {
+      setRequestTypesStatus(Status.ERROR);
+    }
+  };
+  const checkType = () => {};
 
   const selectProps: SelectProps = {
     mode: 'multiple',
@@ -76,7 +105,7 @@ const CreateRequest = () => {
     options,
     onChange: (newValue: number[]) => {
       console.log('newValue', newValue);
-      setValues(newValue);
+      setValue(newValue);
     },
     placeholder: 'Выбирите элемент...',
     maxTagCount: 'responsive',
@@ -84,17 +113,30 @@ const CreateRequest = () => {
   useEffect(() => {
     console.log('Страница создания запроса');
     dispatch(fetchUsers());
+    fetchRequestTypes();
   }, []);
+  console.log('requestTypes', requestTypes);
+  const handleChange = (value: any) => {
+    console.log(`selected ${value}`);
+    setSelectType(value);
+  };
   return (
     <>
       <form className={styles.form} onSubmit={handleSubmit(submit)}>
         <div className={styles.inputs}>
+          <Select
+            style={{ width: 300 }}
+            onChange={handleChange}
+            options={requestTypes.map((type) => ({
+              value: type.id_type_request,
+              label: type.name,
+            }))}
+          />
           <label>
             Выбирите стажеров, о которых хотите собрать обратную связь
           </label>
           <Space direction="vertical" style={{ width: '100%' }}>
-            <Select {...selectProps} />
-            {/*<Select {...selectProps} disabled />*/}
+            <Select {...selectProps} disabled={false} />
           </Space>
         </div>
         <Button
