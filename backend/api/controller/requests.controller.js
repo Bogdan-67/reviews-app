@@ -27,17 +27,28 @@ class RequestController {
   async getRequestTypes(req, res, next) {
     try {
       const types = await requestService.getTypes();
-      console.log(res.status(200).json(types));
       res.status(200).json(types);
     } catch (e) {
       next(e);
     }
   }
 
+
   async getRequests(req, res, next) {
     try {
       const requests = await requestService.getRequests(req.query);
       res.status(200).json(requests);
+    } catch (e) {
+      await db.query('ROLLBACK');
+      next(e);
+    }
+  }
+  
+  async updStatusReq(req, res, next) {
+    try {
+      console.log('safdadsf');
+      const statusReq = await requestService.updStatusReq(req.body);
+      res.status(200).json(statusReq);
     } catch (e) {
       await db.query('ROLLBACK');
       next(e);

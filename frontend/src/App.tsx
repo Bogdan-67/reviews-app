@@ -17,6 +17,7 @@ import CreatePoll from './pages/Poll/CreatePoll';
 import CompletePoll from './pages/Poll/CompletePoll';
 import UsersInfo from './pages/Users/Users';
 import GiveRole from './pages/Roles/GiveRole';
+import AddInterns from './pages/Interns/AddInterns';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -73,6 +74,11 @@ function App() {
             <Route path="user/:id" element={<CompletePoll />}></Route>
           </Route>
           <Route path="staff" element={<UsersInfo />}></Route>
+          <Route path="interns">
+            <Route path="" element={<AddInterns />}></Route>
+            <Route path="add" element={<AddInterns />}></Route>
+          </Route>
+
           <Route path="*" element={<NotFound />}></Route>
         </Route>
       </Routes>

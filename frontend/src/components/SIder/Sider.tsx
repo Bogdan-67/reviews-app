@@ -53,6 +53,12 @@ const Sider: FC = () => {
         >
           Опросы
         </Link>
+        <Link
+          to="/interns"
+          style={window.location.pathname === '/interns' ? activeLinkStyle : {}}
+        >
+          Стажеры
+        </Link>
       </Flex>
     </>
   );
