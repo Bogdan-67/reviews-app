@@ -21,7 +21,7 @@ module.exports = function (role) {
 
       console.log(userData);
 
-      if (userData.role !== role && userData.role !== 'ADMIN') {
+      if (userData.role !== role && !userData.roles.includes('Руководитель')) {
         return next(ApiError.BadRequest('Нет прав доступа'));
       }
       req.user = userData;
