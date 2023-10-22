@@ -14,8 +14,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { SelectRequests, fetchRequests } from '../../redux/slices/requstSlice';
 import { IRequest } from '../../models/IRequest';
 import SetRespondentsModal from '../../components/Modals/SetRespondentsModal';
-import { SelectUser } from '../../redux/slices/profileSlice';
-import { Link } from 'react-router-dom';
+import styles from './requests.module.scss';
 
 const items = [
   { key: '1', label: 'Action 1' },
@@ -139,8 +138,9 @@ const TableRequests = (props: Props) => {
   }, [id_user]);
   return (
     <>
-      <Flex vertical align="center">
-        <h1>Запросы на обратную связь</h1>
+      <Flex vertical align="flex-start">
+        <h1 className={styles.requests}>Запросы на обратную связь</h1>
+        <div className={styles.TableReq}></div>
         <Table
           style={{ width: '100%' }}
           expandable={{ expandedRowRender }}

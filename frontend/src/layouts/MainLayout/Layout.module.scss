@@ -1,3 +1,6 @@
+.layout {
+  max-height: 100vh;
+}
 .header {
   height: 80px;
   display: flex;
@@ -5,44 +8,22 @@
   justify-content: center;
 }
 .layoutContent {
-  padding-bottom: 30px;
   display: flex;
+  height: 100vh;
   & .layoutContent2 {
     display: flex;
   }
 }
 .sider {
-  border-radius: 0px 0px 10px 0px;
   margin-right: 60px;
+  width: 300px;
+  max-width: 300px;
+  min-width: 300px;
+  background: #001529;
 }
 
 .content {
   display: flex;
-  margin-top: 60px;
-  // width: 50%;
-  text-align: center;
-}
-
-.content {
-  margin: 0 25px;
-}
-
-.content {
-  margin: 0 25px;
-}
-
-.content {
-  margin: 0 25px;
-}
-
-.content {
-  margin: 0 25px;
-}
-
-.content {
-  margin: 0 25px;
-}
-
-.content {
+  padding-top: 60px;
   margin: 0 25px;
 }
