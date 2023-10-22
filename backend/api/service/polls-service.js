@@ -22,7 +22,7 @@ class PollsService {
     return questionTypesObjects;
   }
 
-  async createPoll(data) {
+  async createPoll({ data }) {
     await db.query('BEGIN');
 
     const parsedData = JSON.parse(data);
