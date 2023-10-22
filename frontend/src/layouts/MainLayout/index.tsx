@@ -13,13 +13,15 @@ const MainLayout: FC = () => {
       <Header className={styles.header}>
         <HeaderComponent />
       </Header>
-      <Layout hasSider>
-        <Sider className={styles.sider}>
-          <SiderComponent />
-        </Sider>
-        <Content className={styles.content}>
-          <Outlet />
-        </Content>
+      <Layout hasSider className={styles.layoutContent}>
+        <div className={styles.layoutContent2}>
+          <Sider className={styles.sider}>
+            <SiderComponent />
+          </Sider>
+          <Content className={styles.content}>
+            <Outlet />
+          </Content>
+        </div>
       </Layout>
     </Layout>
   );
