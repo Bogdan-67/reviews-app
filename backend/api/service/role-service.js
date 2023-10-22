@@ -24,7 +24,7 @@ class RoleService {
         [user]
       );
       await db.query(
-        `INSERT user_roles(role_id, account_id) VALUES ($1, $2) RETURNING *`,
+        `INSERT INTO user_roles(role_id, account_id) VALUES ($1, $2) RETURNING *`,
         [id_role, account.rows[0].id_account]
       );
     });
