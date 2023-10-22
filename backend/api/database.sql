@@ -140,6 +140,8 @@ CREATE TABLE feedback(
     FOREIGN KEY (respondent_id) REFERENCES users(id_user) ON DELETE CASCADE,
     author_id INTEGER NOT NULL,
     FOREIGN KEY (author_id) REFERENCES users(id_user) ON DELETE CASCADE,
+    intern_id INTEGER NOT NULL,
+    FOREIGN KEY (intern_id) REFERENCES users(id_user) ON DELETE CASCADE,
     status_request_id INTEGER NOT NULL,
     FOREIGN KEY (status_request_id) REFERENCES status_request(id_status_request) ON DELETE CASCADE,
     request_id INTEGER,
