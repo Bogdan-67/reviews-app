@@ -1,4 +1,18 @@
 import * as Yup from 'yup';
 
-const LoginSchema = Yup.object().shape({});
-export default LoginSchema;
+const OptionSchema = Yup.object().shape({
+  text: Yup.string().required('Поле "Вариант ответа" обязательно к заполнению'),
+});
+
+const QuestionSchema = Yup.object().shape({
+  question_title: Yup.string().required(
+    'Поле "Название вопроса" обязательно к заполнению'
+  ),
+  options: Yup.array().of(OptionSchema),
+});
+
+const CreatePollSchema = Yup.object().shape({
+  name: Yup.string().required('Поле "Название" обязательно к заполнению'),
+  comment: Yup.string(),
+});
+export default CreatePollSchema;
