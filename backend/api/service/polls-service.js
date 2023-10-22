@@ -22,29 +22,36 @@ class PollsService {
     return questionTypesObjects;
   }
 
-  async createPoll({ data }) {
+  async createPoll(data) {
     await db.query('BEGIN');
 
     const parsedData = JSON.parse(data);
 
-    const newPoll = await db.query(`INSERT INTO polls(name, comment) VALUES ($1, $2) RETURNING *`, [
-      parsedData.name,
-      parsedData.comment,
-    ]);
-
-    const newPollQuestions = await db.query(
-      `INSERT INTO poll_questions(poll_id, question_title, question_type_id) VALUES ($1, $2, $3) RETURNING *`,
-      [
-        newPoll.rows[0].id_poll,
-        parsedData.questions.question_title,
-        parsedData.questions.question_type_id,
-      ],
+    const newPoll = await db.query(
+      `INSERT INTO polls(name, comment) VALUES ($1, $2) RETURNING *`,
+      [parsedData.name, parsedData.comment]
     );
 
-    const newQuestionOptions = await db.query(
-      `INSERT INTO question_options(question_id, text) VALUES ($1, $2) RETURNING *`,
-      [newPollQuestions.rows[0].id_question, parsedData.questions.options.text],
-    );
+    const promises = [];
+    for (const question of parsedData.questions) {
+      const newPollQuestions = await db.query(
+        `INSERT INTO poll_questions(poll_id, question_title, question_type_id) VALUES ($1, $2, $3) RETURNING *`,
+        [
+          newPoll.rows[0].id_poll,
+          question.question_title,
+          question.question_type_id,
+        ]
+      );
+
+      for (const option of question.options) {
+        const newQuestionOptions = await db.query(
+          `INSERT INTO question_options(question_id, text) VALUES ($1, $2) RETURNING *`,
+          [newPollQuestions.rows[0].id_question, option.text]
+        );
+      }
+    }
+
+    await Promise.all(promises);
 
     await db.query('COMMIT');
 
