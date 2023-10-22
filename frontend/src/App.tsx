@@ -16,6 +16,7 @@ import CreateRequest from './pages/Requests/CreateRequest';
 import CreatePoll from './pages/Poll/CreatePoll';
 import CompletePoll from './pages/Poll/CompletePoll';
 import UsersInfo from './pages/Users/Users';
+import GiveRole from './pages/Roles/GiveRole';
 
 function App() {
   const dispatch = useAppDispatch();
