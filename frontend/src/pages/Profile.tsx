@@ -20,7 +20,6 @@ const Profile = (props: Props) => {
       >
         Выйти
       </Button>
-      <CreatePollForm />
     </div>
   );
 };
